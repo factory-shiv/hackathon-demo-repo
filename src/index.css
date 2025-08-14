@@ -20,6 +20,34 @@
   --success-color: #28a745;
   --border-color: #dee2e6;
   --shadow-color: rgba(0, 0, 0, 0.1);
+
+  /* ------------------------------------------------ */
+  /* Calculator / interactive element colour palette  */
+  /* ------------------------------------------------ */
+  /* Generic buttons */
+  --btn-bg: #ffffff;
+  --btn-text: #212529;
+  --btn-hover-bg: #f0f0f0;
+  --btn-active-bg: #e6e6e6;
+
+  /* Calculator digit keys (0-9, .) */
+  --digit-bg: var(--btn-bg);
+  --digit-text: var(--btn-text);
+
+  /* Calculator function keys (AC, ±, %) */
+  --function-bg: #e9ecef;
+  --function-text: #495057;
+
+  /* Calculator operator keys (+ − × ÷) */
+  --operator-bg: #4361ee;
+  --operator-text: #ffffff;
+
+  /* Equals key */
+  --equals-bg: #3a0ca3;
+  --equals-text: #ffffff;
+
+  /* Focus ring colour (overrides generic accent if desired) */
+  --focus-ring-color: var(--accent-color);
   
   /* Spacing Variables */
   --spacing-xs: 0.25rem;
@@ -41,6 +69,9 @@ html, body {
   line-height: 1.5;
   color: var(--text-color);
   background-color: var(--bg-color);
+  /* Smooth theme-switching transition */
+  transition: background-color var(--transition-speed) var(--transition-timing),
+              color var(--transition-speed) var(--transition-timing);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -96,4 +127,42 @@ button:active {
   html {
     font-size: 14px;
   }
+}
+
+/* --------------------------------------------------------- */
+/* Dark theme overrides (apply .dark-theme to <html> element) */
+/* --------------------------------------------------------- */
+.dark-theme {
+  /* Color Variables */
+  --bg-color: #1e1f22;
+  --text-color: #e3e3e3;
+  --primary-color: #6ea8ff;
+  --secondary-color: #a0a0a0;
+  --accent-color: #4cc9f0;
+  --error-color: #ff6b6b;
+  --success-color: #4cd964;
+  --border-color: #2b2c30;
+  --shadow-color: rgba(0, 0, 0, 0.6);
+
+  /* (Optional) tweak spacing or transition if required */
+
+  /* -------------- dark-theme interactive palette -------------- */
+  --btn-bg: #2b2c30;
+  --btn-text: #e3e3e3;
+  --btn-hover-bg: #35363a;
+  --btn-active-bg: #3d3e42;
+
+  --digit-bg: var(--btn-bg);
+  --digit-text: var(--btn-text);
+
+  --function-bg: #39393d;
+  --function-text: #d1d1d6;
+
+  --operator-bg: #6ea8ff;
+  --operator-text: #0f172a;
+
+  --equals-bg: #4cc9f0;
+  --equals-text: #0f172a;
+
+  --focus-ring-color: var(--accent-color);
 }
