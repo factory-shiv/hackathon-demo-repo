@@ -156,6 +156,33 @@ const Calculator = () => {
     setError('');
   };
 
+  // Handle square root operation
+  const handleSquareRoot = () => {
+    setError('');
+    const value = parseFloat(displayValue);
+    const result = Math.sqrt(value);
+    setDisplayValue(String(result));
+    setWaitingForOperand(true);
+  };
+
+  // Handle square operation
+  const handleSquare = () => {
+    setError('');
+    const value = parseFloat(displayValue);
+    const result = value * value;
+    setDisplayValue(String(result));
+    setWaitingForOperand(true);
+  };
+
+  // Handle reciprocal operation
+  const handleReciprocal = () => {
+    setError('');
+    const value = parseFloat(displayValue);
+    const result = value === 0 ? NaN : 1 / value;
+    setDisplayValue(String(result));
+    setWaitingForOperand(true);
+  };
+
   /* ------------------------------------------------------------------
    * Keyboard support
    * ------------------------------------------------------------------ */
@@ -212,6 +239,18 @@ const Calculator = () => {
           e.preventDefault();
           // mimic % button
           setDisplayValue(String(parseFloat(displayValue) / 100));
+          break;
+        case 'r':
+          e.preventDefault();
+          handleSquareRoot();
+          break;
+        case 's':
+          e.preventDefault();
+          handleSquare();
+          break;
+        case 'i':
+          e.preventDefault();
+          handleReciprocal();
           break;
         default:
           return; // unmapped key
@@ -277,6 +316,18 @@ const Calculator = () => {
               setDisplayValue(String(value / 100));
             }}>
               %
+            </button>
+          </div>
+          
+          <div className="advanced-keys">
+            <button className={'calculator-key key-sqrt' + getActiveClass('r')} onClick={handleSquareRoot}>
+              √
+            </button>
+            <button className={'calculator-key key-square' + getActiveClass('s')} onClick={handleSquare}>
+              x²
+            </button>
+            <button className={'calculator-key key-reciprocal' + getActiveClass('i')} onClick={handleReciprocal}>
+              1/x
             </button>
           </div>
           

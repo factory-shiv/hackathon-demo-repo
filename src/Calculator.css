@@ -101,6 +101,12 @@
   gap: 0.75rem;
 }
 
+.advanced-keys {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem;
+}
+
 .key-0 {
   grid-column: 1 / span 2;
 }
@@ -142,6 +148,31 @@
 .function-keys .calculator-key {
   background-color: var(--function-bg);
   color: var(--function-text);
+}
+
+/* Distinct styling for advanced operation buttons */
+.advanced-keys .calculator-key {
+  /* Subtle violet color to distinguish advanced operations */
+  background-color: #6f4af6;
+  color: #ffffff;
+}
+
+/* Hover, click and keyboard-pressed states for advanced operations */
+.advanced-keys .calculator-key:hover {
+  background-color: #7c5df7; /* lighter purple on hover */
+}
+
+.advanced-keys .calculator-key:active {
+  background-color: #5a3fd1; /* darker purple on mouse press */
+  transform: translateY(1px);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+/* Active state triggered via JS for keyboard interaction */
+.advanced-keys .calculator-key.active {
+  background-color: #5a3fd1; /* same as :active for consistency */
+  transform: translateY(2px) scale(0.97);
+  box-shadow: 0 0 0 rgba(0, 0, 0, 0);
 }
 
 .operator-keys .calculator-key {
