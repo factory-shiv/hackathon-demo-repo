@@ -2,7 +2,8 @@
 
 .calculator {
   width: 100%;
-  max-width: 360px;
+  /* Increased width for better desktop appearance */
+  max-width: 420px;
   background-color: var(--bg-color);
   border-radius: 16px;
   box-shadow: 0 10px 30px var(--shadow-color), 0 5px 15px var(--shadow-color);
@@ -73,7 +74,8 @@
 .calculator-keypad {
   display: grid;
   grid-template-columns: 3fr 1fr;
-  padding: 0.75rem;
+  /* More breathing room around keys */
+  padding: 1rem;
   gap: 0.75rem;
   background-color: var(--bg-color);
 }
@@ -110,9 +112,11 @@
 /* Button styling */
 .calculator-key {
   border-radius: 12px;
-  font-size: 1.5rem;
+  /* Slightly larger text to match bigger buttons */
+  font-size: 1.6rem;
   font-weight: 500;
-  height: 60px;
+  /* Increased default height for better proportions */
+  height: 65px;
   display: flex;
   justify-content: center;
   align-items: center;
