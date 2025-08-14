@@ -31,6 +31,20 @@
   box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
+/* Visually-hidden native checkbox  */
+.theme-toggle-input {
+  position: absolute;
+  opacity: 0;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  border: 0;
+  padding: 0;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  overflow: hidden;
+}
+
 /* Light mode active state */
 :root:not(.dark-theme) .theme-toggle:hover .theme-toggle-track {
   background-color: #d1d1d6;
@@ -46,11 +60,13 @@
 }
 
 /* Active states based on theme */
-:root:not(.dark-theme) .theme-toggle-thumb {
+/* Default thumb position */
+.theme-toggle-thumb {
   transform: translateX(2px);
 }
 
-.dark-theme .theme-toggle-thumb {
+/* Thumb slides when checkbox is checked */
+.theme-toggle-input:checked + .theme-toggle-track .theme-toggle-thumb {
   transform: translateX(calc(100% - 2px - 26px));
 }
 
@@ -77,7 +93,8 @@
 }
 
 /* Dark mode thumb */
-.dark-theme .theme-toggle-thumb {
+/* When in dark mode (checked) give lighter thumb for contrast */
+.theme-toggle-input:checked + .theme-toggle-track .theme-toggle-thumb {
   background-color: #f2f2f7;
 }
 
@@ -94,13 +111,17 @@
   color: #5e5ce6;
 }
 
-/* Show appropriate icon based on theme */
-:root:not(.dark-theme) .sun-icon {
+/* Show sun by default, moon when checked  */
+.sun-icon {
   opacity: 1;
   transform: rotate(0deg) scale(1);
 }
 
-.dark-theme .moon-icon {
+.theme-toggle-input:checked + .theme-toggle-track .sun-icon {
+  opacity: 0;
+}
+
+.theme-toggle-input:checked + .theme-toggle-track .moon-icon {
   opacity: 1;
   transform: rotate(0deg) scale(1);
 }
@@ -109,6 +130,12 @@
 .theme-toggle:active .sun-icon,
 .theme-toggle:active .moon-icon {
   transform: rotate(360deg) scale(1.1);
+}
+
+/* Focus-visible via input */
+.theme-toggle:focus-within .theme-toggle-track {
+  outline: 2px solid var(--accent-color);
+  outline-offset: 2px;
 }
 
 /* Position the toggle in the header */
@@ -124,7 +151,7 @@
     height: 22px;
   }
   
-  .dark-theme .theme-toggle-thumb {
+  .theme-toggle-input:checked + .theme-toggle-track .theme-toggle-thumb {
     transform: translateX(calc(100% - 2px - 22px));
   }
 }
@@ -140,7 +167,7 @@
     height: 18px;
   }
   
-  .dark-theme .theme-toggle-thumb {
+  .theme-toggle-input:checked + .theme-toggle-track .theme-toggle-thumb {
     transform: translateX(calc(100% - 2px - 18px));
   }
   
