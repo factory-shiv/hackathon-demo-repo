@@ -2,8 +2,10 @@
 
 .calculator {
   width: 100%;
-  /* Increased width for better desktop appearance */
-  max-width: 420px;
+  /* 50% of viewport width for larger screens */
+  max-width: 50vw;
+  /* Ensure calculator doesn't get too narrow */
+  min-width: 320px;
   background-color: var(--bg-color);
   border-radius: 16px;
   box-shadow: 0 10px 30px var(--shadow-color), 0 5px 15px var(--shadow-color);
@@ -170,9 +172,17 @@
 }
 
 /* Responsive adjustments */
+/* Tablet styles - 70% width */
+@media (max-width: 768px) {
+  .calculator {
+    max-width: 70vw;
+  }
+}
+
+/* Mobile styles - 90% width */
 @media (max-width: 480px) {
   .calculator {
-    max-width: 100%;
+    max-width: 90vw;
   }
   
   .calculator-display {

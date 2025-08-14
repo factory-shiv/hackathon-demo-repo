@@ -112,16 +112,6 @@
 }
 
 /* Position the toggle in the header */
-.App-header {
-  position: relative;
-}
-
-.App-header .theme-toggle {
-  position: absolute;
-  top: 20px;
-  right: 20px;
-}
-
 /* Responsive adjustments */
 @media (max-width: 768px) {
   .theme-toggle {
@@ -136,11 +126,6 @@
   
   .dark-theme .theme-toggle-thumb {
     transform: translateX(calc(100% - 2px - 22px));
-  }
-  
-  .App-header .theme-toggle {
-    top: 15px;
-    right: 15px;
   }
 }
 

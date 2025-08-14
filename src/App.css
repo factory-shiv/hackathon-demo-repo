@@ -10,18 +10,6 @@
   gap: var(--spacing-lg);
 }
 
-.App-header {
-  text-align: center;
-  padding: var(--spacing-lg) 0;
-}
-
-.App-header h1 {
-  font-size: 2.5rem;
-  font-weight: 600;
-  color: var(--primary-color);
-  margin-bottom: var(--spacing-md);
-  letter-spacing: -0.5px;
-}
 
 main {
   flex: 1;
@@ -58,7 +46,7 @@ main {
     padding: var(--spacing-sm);
   }
   
-  .App-header h1 {
+  .HeaderContent h1 {
     font-size: 2rem;
   }
   
@@ -68,7 +56,48 @@ main {
 }
 
 @media (max-width: 480px) {
-  .App-header h1 {
+  .HeaderContent h1 {
     font-size: 1.75rem;
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* New full-width header bar                                          */
+/* ------------------------------------------------------------------ */
+
+.AppHeader {
+  width: 100%;
+  background: var(--header-bg);
+  color: var(--header-text);
+  border-bottom: 1px solid var(--header-border);
+}
+
+.HeaderContent {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--spacing-md);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-md);
+}
+
+.HeaderContent h1 {
+  font-size: 1.75rem;
+  font-weight: 600;
+  letter-spacing: -0.25px;
+  color: inherit; /* inherit header text colour */
+  margin: 0;
+}
+
+@media (min-width: 769px) {
+  .HeaderContent h1 {
+    font-size: 2rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .HeaderContent h1 {
+    font-size: 2.25rem;
   }
 }

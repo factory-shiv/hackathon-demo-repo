@@ -21,6 +21,11 @@
   --border-color: #dee2e6;
   --shadow-color: rgba(0, 0, 0, 0.1);
 
+  /* Header (app-wide top bar) */
+  --header-bg: #ffffff;
+  --header-text: var(--text-color);
+  --header-border: #dfe1e5;
+
   /* ------------------------------------------------ */
   /* Calculator / interactive element colour palette  */
   /* ------------------------------------------------ */
@@ -143,6 +148,11 @@ button:active {
   --success-color: #4cd964;
   --border-color: #2b2c30;
   --shadow-color: rgba(0, 0, 0, 0.6);
+
+  /* Header overrides for dark theme */
+  --header-bg: #15171a;
+  /* header text can inherit --text-color */
+  --header-border: #2b2c30;
 
   /* (Optional) tweak spacing or transition if required */
 

@@ -7,11 +7,16 @@ import ThemeToggle from './components/ThemeToggle';
 function App() {
   return (
     <ThemeProvider>
-      <div className="App">
-        <header className="App-header">
+      {/* Full-width application header */}
+      <header className="AppHeader">
+        <div className="HeaderContent">
           <h1>Calculator App</h1>
           <ThemeToggle />
-        </header>
+        </div>
+      </header>
+
+      {/* Constrained main application area */}
+      <div className="App">
         <main>
           <Calculator />
         </main>
