@@ -1,0 +1,220 @@
+/* Calculator.css - Styles for the Calculator component */
+
+.calculator {
+  width: 100%;
+  max-width: 360px;
+  background-color: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15), 0 5px 15px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.calculator:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.18), 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* Display area */
+.calculator-display {
+  background-color: #f8f9fa;
+  padding: 1.5rem;
+  text-align: right;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  min-height: 120px;
+  justify-content: flex-end;
+}
+
+.operation-display {
+  font-size: 1rem;
+  color: #6c757d;
+  min-height: 1.5rem;
+  margin-bottom: 0.5rem;
+  opacity: 0.8;
+  font-weight: 400;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.value-display {
+  font-size: 2.5rem;
+  font-weight: 600;
+  color: #212529;
+  line-height: 1.2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+}
+
+.error-display {
+  color: #dc3545;
+  font-size: 0.875rem;
+  margin-top: 0.5rem;
+  min-height: 1.25rem;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Keypad */
+.calculator-keypad {
+  display: grid;
+  grid-template-columns: 3fr 1fr;
+  padding: 0.75rem;
+  gap: 0.75rem;
+  background-color: #ffffff;
+}
+
+.input-keys {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.function-keys {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem;
+}
+
+.digit-keys {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(4, 1fr);
+  gap: 0.75rem;
+}
+
+.key-0 {
+  grid-column: 1 / span 2;
+}
+
+.operator-keys {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.75rem;
+}
+
+/* Button styling */
+.calculator-key {
+  border-radius: 12px;
+  font-size: 1.5rem;
+  font-weight: 500;
+  height: 60px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.15s ease;
+  border: none;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Button types */
+.digit-keys .calculator-key {
+  background-color: #f8f9fa;
+  color: #212529;
+}
+
+.function-keys .calculator-key {
+  background-color: #e9ecef;
+  color: #495057;
+}
+
+.operator-keys .calculator-key {
+  background-color: #4361ee;
+  color: white;
+}
+
+.key-equals {
+  background-color: #3a0ca3 !important;
+  color: white;
+}
+
+.key-clear {
+  color: #e63946;
+}
+
+/* Button states */
+.calculator-key:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  filter: brightness(1.05);
+}
+
+.calculator-key:active {
+  transform: translateY(1px);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  filter: brightness(0.95);
+}
+
+/* Responsive adjustments */
+@media (max-width: 480px) {
+  .calculator {
+    max-width: 100%;
+  }
+  
+  .calculator-display {
+    padding: 1rem;
+    min-height: 100px;
+  }
+  
+  .value-display {
+    font-size: 2rem;
+  }
+  
+  .calculator-key {
+    height: 50px;
+    font-size: 1.25rem;
+  }
+  
+  .calculator-keypad {
+    padding: 0.5rem;
+    gap: 0.5rem;
+  }
+  
+  .function-keys,
+  .digit-keys,
+  .operator-keys {
+    gap: 0.5rem;
+  }
+}
+
+/* Touch-friendly adjustments for mobile */
+@media (hover: none) and (pointer: coarse) {
+  .calculator-key {
+    padding: 0.75rem;
+    min-height: 60px;
+  }
+  
+  .calculator-key:hover {
+    transform: none;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    filter: none;
+  }
+  
+  .calculator-key:active {
+    background-color: rgba(0, 0, 0, 0.05);
+    transform: scale(0.98);
+  }
+  
+  .operator-keys .calculator-key:active {
+    background-color: #3a56d4;
+  }
+}
+
+/* Accessibility focus styles */
+.calculator-key:focus-visible {
+  outline: 2px solid #4361ee;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px rgba(67, 97, 238, 0.3);
+}
