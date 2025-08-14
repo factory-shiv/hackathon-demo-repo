@@ -171,6 +171,23 @@
   background-color: var(--btn-active-bg);
 }
 
+/* ------------------------------------------------------------------ */
+/*  Keyboard “active” state                                            */
+/*  Triggered via JS by adding .active class when a key is pressed     */
+/* ------------------------------------------------------------------ */
+.calculator-key.active {
+  /* Override any :hover styles */
+  transform: translateY(2px) scale(0.97);
+  box-shadow: 0 0 0 rgba(0, 0, 0, 0.0); /* appear pressed in */
+  background-color: var(--btn-active-bg);
+  /* Higher specificity than .calculator-key:hover for color */
+}
+
+/* Maintain pressed look while the physical button is also clicked */
+.calculator-key.active:active {
+  transform: translateY(2px) scale(0.96);
+}
+
 /* Responsive adjustments */
 /* Tablet styles - 70% width */
 @media (max-width: 768px) {

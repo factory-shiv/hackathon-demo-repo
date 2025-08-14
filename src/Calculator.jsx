@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './Calculator.css';
 
 const Calculator = () => {
@@ -8,6 +8,12 @@ const Calculator = () => {
   const [operation, setOperation] = useState(null);
   const [waitingForOperand, setWaitingForOperand] = useState(false);
   const [error, setError] = useState('');
+  const [activeKey, setActiveKey] = useState(null); // for visual feedback
+
+  /* ------------------------------------------------------------------
+   * Helper to decide if a button should look active
+   * ------------------------------------------------------------------ */
+  const getActiveClass = (key) => (activeKey === key ? ' active' : '');
 
   // Handle number input
   const handleNumber = (number) => {
@@ -20,6 +26,41 @@ const Calculator = () => {
       // Replace display if it's just '0', otherwise append
       setDisplayValue(displayValue === '0' ? String(number) : displayValue + number);
     }
+  };
+
+  // Handle backspace/delete (⌫)
+  const handleBackspace = () => {
+    setError('');
+
+    // If an error is on screen just clear everything
+    if (displayValue === 'Error') {
+      setDisplayValue('0');
+      return;
+    }
+
+    // If waiting for operand, do nothing
+    if (waitingForOperand) return;
+
+    // If only one character or "-x" (single negative digit), reset to 0
+    if (displayValue.length <= 1 || (displayValue.length === 2 && displayValue.startsWith('-'))) {
+      setDisplayValue('0');
+      return;
+    }
+
+    // Remove last char
+    let newValue = displayValue.slice(0, -1);
+
+    // Handle trailing decimal point
+    if (newValue.endsWith('.')) {
+      newValue = newValue.slice(0, -1);
+    }
+
+    // If we removed everything, show 0
+    if (newValue === '' || newValue === '-') {
+      newValue = '0';
+    }
+
+    setDisplayValue(newValue);
   };
 
   // Handle decimal point
@@ -115,6 +156,81 @@ const Calculator = () => {
     setError('');
   };
 
+  /* ------------------------------------------------------------------
+   * Keyboard support
+   * ------------------------------------------------------------------ */
+  useEffect(() => {
+    const keyDownHandler = (e) => {
+      const { key } = e;
+
+      // Map keys to actions
+      if (/^[0-9]$/.test(key)) {
+        e.preventDefault();
+        handleNumber(Number(key));
+        setActiveKey(key);
+        return;
+      }
+
+      const lowered = key.toLowerCase();
+      switch (lowered) {
+        case '+':
+          e.preventDefault();
+          handleOperator('+');
+          break;
+        case '-':
+          e.preventDefault();
+          handleOperator('-');
+          break;
+        case '*':
+        case 'x':
+          e.preventDefault();
+          handleOperator('*');
+          break;
+        case '/':
+          e.preventDefault();
+          handleOperator('/');
+          break;
+        case 'enter':
+        case '=':
+          e.preventDefault();
+          handleEquals();
+          break;
+        case '.':
+          e.preventDefault();
+          handleDecimal();
+          break;
+        case 'escape':
+        case 'c':
+          e.preventDefault();
+          handleClear();
+          break;
+        case 'backspace':
+          e.preventDefault();
+          handleBackspace();
+          break;
+        case '%':
+          e.preventDefault();
+          // mimic % button
+          setDisplayValue(String(parseFloat(displayValue) / 100));
+          break;
+        default:
+          return; // unmapped key
+      }
+
+      // Set active key for visual feedback
+      setActiveKey(lowered);
+    };
+
+    const keyUpHandler = () => setActiveKey(null);
+
+    window.addEventListener('keydown', keyDownHandler);
+    window.addEventListener('keyup', keyUpHandler);
+    return () => {
+      window.removeEventListener('keydown', keyDownHandler);
+      window.removeEventListener('keyup', keyUpHandler);
+    };
+  });
+
   // Calculate function to perform the actual math
   const calculate = (firstValue, secondValue, op) => {
     switch (op) {
@@ -148,7 +264,7 @@ const Calculator = () => {
       <div className="calculator-keypad">
         <div className="input-keys">
           <div className="function-keys">
-            <button className="calculator-key key-clear" onClick={handleClear}>
+            <button className={'calculator-key key-clear' + getActiveClass('escape')} onClick={handleClear}>
               AC
             </button>
             <button className="calculator-key key-sign" onClick={() => {
@@ -156,7 +272,7 @@ const Calculator = () => {
             }}>
               ±
             </button>
-            <button className="calculator-key key-percent" onClick={() => {
+            <button className={'calculator-key key-percent' + getActiveClass('%')} onClick={() => {
               const value = parseFloat(displayValue);
               setDisplayValue(String(value / 100));
             }}>
@@ -165,26 +281,26 @@ const Calculator = () => {
           </div>
           
           <div className="digit-keys">
-            <button className="calculator-key key-0" onClick={() => handleNumber(0)}>0</button>
-            <button className="calculator-key key-dot" onClick={handleDecimal}>.</button>
-            <button className="calculator-key key-1" onClick={() => handleNumber(1)}>1</button>
-            <button className="calculator-key key-2" onClick={() => handleNumber(2)}>2</button>
-            <button className="calculator-key key-3" onClick={() => handleNumber(3)}>3</button>
-            <button className="calculator-key key-4" onClick={() => handleNumber(4)}>4</button>
-            <button className="calculator-key key-5" onClick={() => handleNumber(5)}>5</button>
-            <button className="calculator-key key-6" onClick={() => handleNumber(6)}>6</button>
-            <button className="calculator-key key-7" onClick={() => handleNumber(7)}>7</button>
-            <button className="calculator-key key-8" onClick={() => handleNumber(8)}>8</button>
-            <button className="calculator-key key-9" onClick={() => handleNumber(9)}>9</button>
+            <button className={'calculator-key key-0' + getActiveClass('0')} onClick={() => handleNumber(0)}>0</button>
+            <button className={'calculator-key key-dot' + getActiveClass('.')} onClick={handleDecimal}>.</button>
+            <button className={'calculator-key key-1' + getActiveClass('1')} onClick={() => handleNumber(1)}>1</button>
+            <button className={'calculator-key key-2' + getActiveClass('2')} onClick={() => handleNumber(2)}>2</button>
+            <button className={'calculator-key key-3' + getActiveClass('3')} onClick={() => handleNumber(3)}>3</button>
+            <button className={'calculator-key key-4' + getActiveClass('4')} onClick={() => handleNumber(4)}>4</button>
+            <button className={'calculator-key key-5' + getActiveClass('5')} onClick={() => handleNumber(5)}>5</button>
+            <button className={'calculator-key key-6' + getActiveClass('6')} onClick={() => handleNumber(6)}>6</button>
+            <button className={'calculator-key key-7' + getActiveClass('7')} onClick={() => handleNumber(7)}>7</button>
+            <button className={'calculator-key key-8' + getActiveClass('8')} onClick={() => handleNumber(8)}>8</button>
+            <button className={'calculator-key key-9' + getActiveClass('9')} onClick={() => handleNumber(9)}>9</button>
           </div>
         </div>
         
         <div className="operator-keys">
-          <button className="calculator-key key-divide" onClick={() => handleOperator('/')}>÷</button>
-          <button className="calculator-key key-multiply" onClick={() => handleOperator('*')}>×</button>
-          <button className="calculator-key key-subtract" onClick={() => handleOperator('-')}>−</button>
-          <button className="calculator-key key-add" onClick={() => handleOperator('+')}>+</button>
-          <button className="calculator-key key-equals" onClick={handleEquals}>=</button>
+          <button className={'calculator-key key-divide' + getActiveClass('/')} onClick={() => handleOperator('/')}>÷</button>
+          <button className={'calculator-key key-multiply' + getActiveClass('*')} onClick={() => handleOperator('*')}>×</button>
+          <button className={'calculator-key key-subtract' + getActiveClass('-')} onClick={() => handleOperator('-')}>−</button>
+          <button className={'calculator-key key-add' + getActiveClass('+')} onClick={() => handleOperator('+')}>+</button>
+          <button className={'calculator-key key-equals' + getActiveClass('enter')} onClick={handleEquals}>=</button>
         </div>
       </div>
     </div>

@@ -12,7 +12,23 @@ A modern, responsive web-based calculator application built with React and Vite.
 - **Error Handling**: Graceful handling of division by zero and other errors
 - **Responsive Design**: Works seamlessly on desktop and mobile devices
 - **Modern UI**: Clean, intuitive interface with visual feedback
-- **Keyboard Support**: Use your keyboard for calculations (coming soon)
+- **Keyboard Support**: Full keyboard control for all operations
+- **Backspace/Delete**: Use the `Backspace` key to erase the last digit
+
+### Keyboard Mappings
+
+| Key(s)        | Action                 |
+| ------------- | ---------------------- |
+| `0–9`         | Enter digits           |
+| `.`           | Decimal point          |
+| `+`           | Addition               |
+| `-`           | Subtraction            |
+| `*` or `x`    | Multiplication         |
+| `/`           | Division               |
+| `Enter` or `=`| Equals / calculate     |
+| `%`           | Percentage             |
+| `Backspace`   | Delete last digit      |
+| `Escape` or `c`| Clear (AC)            |
 
 ## Prerequisites
 
