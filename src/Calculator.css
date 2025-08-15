@@ -57,6 +57,51 @@
   text-overflow: ellipsis;
   white-space: nowrap;
   transition: all 0.2s ease;
+  /* Make room for the copy button */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.copy-btn {
+  font-size: 1rem;
+  background: transparent;
+  border: none;
+  color: var(--secondary-color);
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+  border-radius: 6px;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    transform 0.1s ease;
+}
+
+.copy-btn:hover,
+.copy-btn:focus-visible {
+  background-color: var(--btn-hover-bg);
+  color: var(--text-color);
+}
+
+.copy-btn:active {
+  transform: scale(0.95);
+}
+
+/* Copy / Paste status feedback */
+.copy-status {
+  font-size: 0.75rem;
+  color: var(--secondary-color);
+  margin-top: 0.25rem;
+  text-align: right;
+  opacity: 0;
+  animation: statusFade 1.5s forwards;
+}
+
+@keyframes statusFade {
+  0%   { opacity: 0; transform: translateY(-4px); }
+  10%  { opacity: 1; transform: translateY(0);    }
+  90%  { opacity: 1; }
+  100% { opacity: 0; }
 }
 
 .error-display {

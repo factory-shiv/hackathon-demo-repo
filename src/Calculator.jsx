@@ -9,6 +9,7 @@ const Calculator = () => {
   const [waitingForOperand, setWaitingForOperand] = useState(false);
   const [error, setError] = useState('');
   const [activeKey, setActiveKey] = useState(null); // for visual feedback
+  const [copyStatus, setCopyStatus] = useState(''); // feedback for copy / paste
 
   /* ------------------------------------------------------------------
    * Helper to decide if a button should look active
@@ -190,6 +191,20 @@ const Calculator = () => {
     const keyDownHandler = (e) => {
       const { key } = e;
 
+      // Handle copy (Ctrl/Cmd + C)
+      if ((e.ctrlKey || e.metaKey) && key.toLowerCase() === 'c') {
+        e.preventDefault();
+        handleCopy();
+        return;
+      }
+
+      // Handle paste (Ctrl/Cmd + V)
+      if ((e.ctrlKey || e.metaKey) && key.toLowerCase() === 'v') {
+        e.preventDefault();
+        handlePaste();
+        return;
+      }
+
       // Map keys to actions
       if (/^[0-9]$/.test(key)) {
         e.preventDefault();
@@ -270,6 +285,47 @@ const Calculator = () => {
     };
   });
 
+  /* ------------------------------------------------------------------
+   * Copy / Paste helpers
+   * ------------------------------------------------------------------ */
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(displayValue);
+      setCopyStatus('Copied!');
+    } catch (err) {
+      setCopyStatus('Copy failed');
+    }
+  };
+
+  const handlePaste = async () => {
+    try {
+      const text = await navigator.clipboard.readText();
+      const trimmed = text.trim();
+      if (trimmed === '') {
+        setCopyStatus('Nothing to paste');
+        return;
+      }
+      // Validate numeric
+      const value = Number(trimmed);
+      if (Number.isNaN(value)) {
+        setCopyStatus('Invalid number');
+        return;
+      }
+      setDisplayValue(trimmed);
+      setWaitingForOperand(false);
+      setCopyStatus('Pasted!');
+    } catch (err) {
+      setCopyStatus('Paste failed');
+    }
+  };
+
+  // Clear copyStatus after a short delay
+  useEffect(() => {
+    if (!copyStatus) return;
+    const t = setTimeout(() => setCopyStatus(''), 1500);
+    return () => clearTimeout(t);
+  }, [copyStatus]);
+
   // Calculate function to perform the actual math
   const calculate = (firstValue, secondValue, op) => {
     switch (op) {
@@ -296,7 +352,18 @@ const Calculator = () => {
     <div className="calculator">
       <div className="calculator-display">
         <div className="operation-display">{getOperationDisplay()}</div>
-        <div className="value-display">{displayValue}</div>
+        <div className="value-display">
+          {displayValue}
+          <button
+            className="copy-btn"
+            title="Copy"
+            aria-label="Copy value"
+            onClick={handleCopy}
+          >
+            📋
+          </button>
+        </div>
+        {copyStatus && <div className="copy-status">{copyStatus}</div>}
         {error && <div className="error-display">{error}</div>}
       </div>
       

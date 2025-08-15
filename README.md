@@ -14,6 +14,9 @@ A modern, responsive web-based calculator application built with React and Vite.
 - **Modern UI**: Clean, intuitive interface with visual feedback
 - **Keyboard Support**: Full keyboard control for all operations
 - **Backspace/Delete**: Use the `Backspace` key to erase the last digit
+- **Copy / Paste Support**:  
+  • Click the copy 📋 button beside the display **or** press **Ctrl/Cmd + C** to copy the current result  
+  • Press **Ctrl/Cmd + V** to paste a number from your clipboard into the calculator
 
 ### Keyboard Mappings
 
@@ -29,6 +32,8 @@ A modern, responsive web-based calculator application built with React and Vite.
 | `%`           | Percentage             |
 | `Backspace`   | Delete last digit      |
 | `Escape` or `c`| Clear (AC)            |
+| `Ctrl/Cmd + C`| Copy current value     |
+| `Ctrl/Cmd + V`| Paste numeric value    |
 
 ## Prerequisites
 
