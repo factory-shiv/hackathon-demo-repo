@@ -1,5 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import './Calculator.css';
+import './styles/ButtonEffects.css';
+import soundManager from './utils/soundManager';
 
 const Calculator = () => {
   // State variables
@@ -10,6 +12,33 @@ const Calculator = () => {
   const [error, setError] = useState('');
   const [activeKey, setActiveKey] = useState(null); // for visual feedback
   const [copyStatus, setCopyStatus] = useState(''); // feedback for copy / paste
+  const [animationClass, setAnimationClass] = useState(''); // for enhanced animations
+  
+  // Refs for animation timeouts
+  const animationTimeoutRef = useRef(null);
+
+  /* ------------------------------------------------------------------
+   * Sound and visual feedback helpers
+   * ------------------------------------------------------------------ */
+  // Play appropriate sound based on button type
+  const playButtonSound = (type) => {
+    soundManager.playSound(type);
+  };
+
+  // Add temporary animation class
+  const addVisualFeedback = (animationType, duration = 500) => {
+    setAnimationClass(animationType);
+    
+    // Clear any existing timeout
+    if (animationTimeoutRef.current) {
+      clearTimeout(animationTimeoutRef.current);
+    }
+    
+    // Remove the class after duration
+    animationTimeoutRef.current = setTimeout(() => {
+      setAnimationClass('');
+    }, duration);
+  };
 
   /* ------------------------------------------------------------------
    * Helper to decide if a button should look active
@@ -19,6 +48,7 @@ const Calculator = () => {
   // Handle number input
   const handleNumber = (number) => {
     setError('');
+    playButtonSound('number');
     
     if (waitingForOperand) {
       setDisplayValue(String(number));
@@ -32,6 +62,7 @@ const Calculator = () => {
   // Handle backspace/delete (⌫)
   const handleBackspace = () => {
     setError('');
+    playButtonSound('backspace');
 
     // If an error is on screen just clear everything
     if (displayValue === 'Error') {
@@ -67,6 +98,7 @@ const Calculator = () => {
   // Handle decimal point
   const handleDecimal = () => {
     setError('');
+    playButtonSound('number');
     
     // If waiting for operand, start a new decimal number
     if (waitingForOperand) {
@@ -84,6 +116,8 @@ const Calculator = () => {
   // Handle operators (+, -, *, /)
   const handleOperator = (nextOperation) => {
     setError('');
+    playButtonSound('operator');
+    
     const inputValue = parseFloat(displayValue);
     
     // If there's a previous operation waiting, perform it
@@ -106,6 +140,8 @@ const Calculator = () => {
         setPreviousValue(null);
         setOperation(null);
         setWaitingForOperand(true);
+        playButtonSound('error');
+        addVisualFeedback('error-animation');
         return;
       }
       
@@ -121,6 +157,7 @@ const Calculator = () => {
   const handleEquals = () => {
     // If there's no operation, nothing to calculate
     if (operation === null) {
+      playButtonSound('equals');
       return;
     }
     
@@ -128,6 +165,7 @@ const Calculator = () => {
     
     // Don't calculate if waiting for an operand (prevents double equals)
     if (waitingForOperand && previousValue !== null) {
+      playButtonSound('equals');
       return;
     }
     
@@ -137,9 +175,13 @@ const Calculator = () => {
     if (result === 'Error') {
       setError('Cannot divide by zero');
       setDisplayValue('Error');
+      playButtonSound('error');
+      addVisualFeedback('error-animation');
     } else {
       setDisplayValue(String(result));
       setError('');
+      playButtonSound('equals');
+      addVisualFeedback('success-animation');
     }
     
     // Reset for a new calculation
@@ -150,6 +192,7 @@ const Calculator = () => {
 
   // Handle clear button
   const handleClear = () => {
+    playButtonSound('clear');
     setDisplayValue('0');
     setPreviousValue(null);
     setOperation(null);
@@ -160,27 +203,53 @@ const Calculator = () => {
   // Handle square root operation
   const handleSquareRoot = () => {
     setError('');
+    playButtonSound('function');
+    
     const value = parseFloat(displayValue);
     const result = Math.sqrt(value);
-    setDisplayValue(String(result));
+    
+    if (isNaN(result)) {
+      setError('Invalid input for square root');
+      playButtonSound('error');
+      addVisualFeedback('error-animation');
+    } else {
+      setDisplayValue(String(result));
+      addVisualFeedback('success-animation');
+    }
+    
     setWaitingForOperand(true);
   };
 
   // Handle square operation
   const handleSquare = () => {
     setError('');
+    playButtonSound('function');
+    
     const value = parseFloat(displayValue);
     const result = value * value;
     setDisplayValue(String(result));
+    addVisualFeedback('success-animation');
     setWaitingForOperand(true);
   };
 
   // Handle reciprocal operation
   const handleReciprocal = () => {
     setError('');
+    playButtonSound('function');
+    
     const value = parseFloat(displayValue);
-    const result = value === 0 ? NaN : 1 / value;
-    setDisplayValue(String(result));
+    
+    if (value === 0) {
+      setError('Cannot divide by zero');
+      setDisplayValue('Error');
+      playButtonSound('error');
+      addVisualFeedback('error-animation');
+    } else {
+      const result = 1 / value;
+      setDisplayValue(String(result));
+      addVisualFeedback('success-animation');
+    }
+    
     setWaitingForOperand(true);
   };
 
@@ -253,6 +322,7 @@ const Calculator = () => {
         case '%':
           e.preventDefault();
           // mimic % button
+          playButtonSound('function');
           setDisplayValue(String(parseFloat(displayValue) / 100));
           break;
         case 'r':
@@ -292,8 +362,12 @@ const Calculator = () => {
     try {
       await navigator.clipboard.writeText(displayValue);
       setCopyStatus('Copied!');
+      playButtonSound('function');
+      addVisualFeedback('success-animation');
     } catch (err) {
       setCopyStatus('Copy failed');
+      playButtonSound('error');
+      addVisualFeedback('error-animation');
     }
   };
 
@@ -303,19 +377,26 @@ const Calculator = () => {
       const trimmed = text.trim();
       if (trimmed === '') {
         setCopyStatus('Nothing to paste');
+        playButtonSound('error');
         return;
       }
       // Validate numeric
       const value = Number(trimmed);
       if (Number.isNaN(value)) {
         setCopyStatus('Invalid number');
+        playButtonSound('error');
+        addVisualFeedback('error-animation');
         return;
       }
       setDisplayValue(trimmed);
       setWaitingForOperand(false);
       setCopyStatus('Pasted!');
+      playButtonSound('function');
+      addVisualFeedback('success-animation');
     } catch (err) {
       setCopyStatus('Paste failed');
+      playButtonSound('error');
+      addVisualFeedback('error-animation');
     }
   };
 
@@ -349,7 +430,7 @@ const Calculator = () => {
   };
 
   return (
-    <div className="calculator">
+    <div className={`calculator ${animationClass}`}>
       <div className="calculator-display">
         <div className="operation-display">{getOperationDisplay()}</div>
         <div className="value-display">
@@ -370,30 +451,50 @@ const Calculator = () => {
       <div className="calculator-keypad">
         <div className="input-keys">
           <div className="function-keys">
-            <button className={'calculator-key key-clear' + getActiveClass('escape')} onClick={handleClear}>
+            <button 
+              className={'calculator-key key-clear' + getActiveClass('escape')} 
+              onClick={handleClear}
+            >
               AC
             </button>
-            <button className="calculator-key key-sign" onClick={() => {
-              setDisplayValue(displayValue.charAt(0) === '-' ? displayValue.substr(1) : '-' + displayValue);
-            }}>
+            <button 
+              className="calculator-key key-sign" 
+              onClick={() => {
+                playButtonSound('function');
+                setDisplayValue(displayValue.charAt(0) === '-' ? displayValue.substr(1) : '-' + displayValue);
+              }}
+            >
               ±
             </button>
-            <button className={'calculator-key key-percent' + getActiveClass('%')} onClick={() => {
-              const value = parseFloat(displayValue);
-              setDisplayValue(String(value / 100));
-            }}>
+            <button 
+              className={'calculator-key key-percent' + getActiveClass('%')} 
+              onClick={() => {
+                playButtonSound('function');
+                const value = parseFloat(displayValue);
+                setDisplayValue(String(value / 100));
+              }}
+            >
               %
             </button>
           </div>
           
           <div className="advanced-keys">
-            <button className={'calculator-key key-sqrt' + getActiveClass('r')} onClick={handleSquareRoot}>
+            <button 
+              className={'calculator-key key-sqrt' + getActiveClass('r')} 
+              onClick={handleSquareRoot}
+            >
               √
             </button>
-            <button className={'calculator-key key-square' + getActiveClass('s')} onClick={handleSquare}>
+            <button 
+              className={'calculator-key key-square' + getActiveClass('s')} 
+              onClick={handleSquare}
+            >
               x²
             </button>
-            <button className={'calculator-key key-reciprocal' + getActiveClass('i')} onClick={handleReciprocal}>
+            <button 
+              className={'calculator-key key-reciprocal' + getActiveClass('i')} 
+              onClick={handleReciprocal}
+            >
               1/x
             </button>
           </div>

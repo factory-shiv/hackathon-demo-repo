@@ -1,0 +1,197 @@
+/* 
+ * ButtonEffects.css
+ * Enhanced visual feedback for calculator buttons
+ */
+
+/* ---- Ripple Effect Base ---- */
+.calculator-key {
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.calculator-key::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 5px;
+  height: 5px;
+  background: rgba(255, 255, 255, 0.7);
+  opacity: 0;
+  border-radius: 100%;
+  transform: scale(1) translate(-50%, -50%);
+  transform-origin: 0 0;
+  pointer-events: none;
+}
+
+/* ---- Hover Effects ---- */
+.calculator-key:hover {
+  filter: brightness(1.1);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  z-index: 1;
+}
+
+/* ---- Active/Pressed Effects ---- */
+.calculator-key:active,
+.calculator-key.active {
+  transform: scale(0.95);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.calculator-key:active::after,
+.calculator-key.active::after {
+  animation: ripple 0.6s ease-out;
+}
+
+/* ---- Focus Effects for Accessibility ---- */
+.calculator-key:focus-visible {
+  outline: 2px solid var(--focus-color, #4d90fe);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 2px rgba(77, 144, 254, 0.5);
+  z-index: 2;
+}
+
+/* ---- Button Type-Specific Effects ---- */
+
+/* Number Keys */
+.digit-keys .calculator-key:hover {
+  background-color: var(--digit-hover-color, #f0f0f0);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.digit-keys .calculator-key:active,
+.digit-keys .calculator-key.active {
+  background-color: var(--digit-active-color, #e0e0e0);
+}
+
+.digit-keys .calculator-key::after {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+/* Operator Keys */
+.operator-keys .calculator-key:hover {
+  background-color: var(--operator-hover-color, #ff9e2c);
+  box-shadow: 0 2px 10px rgba(255, 158, 44, 0.4);
+}
+
+.operator-keys .calculator-key:active,
+.operator-keys .calculator-key.active {
+  background-color: var(--operator-active-color, #f08c00);
+}
+
+.operator-keys .calculator-key::after {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+/* Function Keys */
+.function-keys .calculator-key:hover {
+  background-color: var(--function-hover-color, #d8d8d8);
+}
+
+.function-keys .calculator-key:active,
+.function-keys .calculator-key.active {
+  background-color: var(--function-active-color, #c0c0c0);
+}
+
+/* Advanced Keys */
+.advanced-keys .calculator-key:hover {
+  background-color: var(--advanced-hover-color, #7e5af9);
+  box-shadow: 0 2px 10px rgba(111, 74, 246, 0.4);
+}
+
+.advanced-keys .calculator-key:active,
+.advanced-keys .calculator-key.active {
+  background-color: var(--advanced-active-color, #5f3ad6);
+}
+
+/* Equals Key Special Effects */
+.key-equals {
+  transition: all 0.2s ease-in-out;
+}
+
+.key-equals:hover {
+  background-color: var(--equals-hover-color, #ff9e2c);
+  box-shadow: 0 0 15px rgba(255, 158, 44, 0.5);
+}
+
+.key-equals:active,
+.key-equals.active {
+  background-color: var(--equals-active-color, #f08c00);
+  transform: scale(0.92);
+  box-shadow: 0 0 8px rgba(255, 158, 44, 0.7);
+}
+
+.key-equals.success {
+  animation: success-pulse 0.5s ease-in-out;
+}
+
+/* Clear Key Special Effects */
+.key-clear:active,
+.key-clear.active {
+  animation: clear-flash 0.3s ease-in-out;
+}
+
+/* ---- State-Specific Animations ---- */
+
+/* Error State */
+.error-state {
+  animation: shake 0.4s ease-in-out;
+}
+
+/* ---- Keyframes Animations ---- */
+
+/* Ripple Effect Animation */
+@keyframes ripple {
+  0% {
+    opacity: 1;
+    transform: scale(1) translate(-50%, -50%);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(50) translate(-50%, -50%);
+  }
+}
+
+/* Shake Animation for Errors */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-5px); }
+  40%, 80% { transform: translateX(5px); }
+}
+
+/* Success Pulse for Equals */
+@keyframes success-pulse {
+  0% { transform: scale(0.95); box-shadow: 0 0 0 rgba(255, 158, 44, 0.7); }
+  50% { transform: scale(1.05); box-shadow: 0 0 20px rgba(255, 158, 44, 0.5); }
+  100% { transform: scale(1); box-shadow: 0 0 5px rgba(255, 158, 44, 0.7); }
+}
+
+/* Clear Button Flash */
+@keyframes clear-flash {
+  0% { background-color: var(--function-active-color, #c0c0c0); }
+  50% { background-color: var(--clear-flash-color, #ff6b6b); }
+  100% { background-color: var(--function-active-color, #c0c0c0); }
+}
+
+/* ---- Dark Mode Adjustments ---- */
+.dark-theme .digit-keys .calculator-key::after {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.dark-theme .calculator-key:focus-visible {
+  outline-color: var(--dark-focus-color, #7d9eff);
+  box-shadow: 0 0 0 2px rgba(125, 158, 255, 0.5);
+}
+
+/* ---- Utility Classes ---- */
+
+/* Add this class when an error occurs */
+.error-animation {
+  animation: shake 0.4s ease-in-out;
+}
+
+/* Add this class when calculation is successful */
+.success-animation {
+  animation: success-pulse 0.5s ease-in-out;
+}

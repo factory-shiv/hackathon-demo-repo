@@ -3,6 +3,7 @@ import Calculator from './Calculator';
 import './App.css';
 import { ThemeProvider } from './contexts/ThemeContext';
 import ThemeToggle from './components/ThemeToggle';
+import SoundToggle from './components/SoundToggle';
 
 function App() {
   return (
@@ -12,6 +13,7 @@ function App() {
         <div className="HeaderContent">
           <h1>Calculator App</h1>
           <ThemeToggle />
+          <SoundToggle />
         </div>
       </header>
 
