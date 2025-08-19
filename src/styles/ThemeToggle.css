@@ -1,0 +1,170 @@
+/* ThemeToggle.css - Styles for the theme toggle switch */
+
+.theme-toggle {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  width: 56px;
+  height: 32px;
+  border-radius: 16px;
+  overflow: visible;
+  transition: all 0.2s ease;
+}
+
+.theme-toggle:focus-visible {
+  outline: 2px solid var(--accent-color);
+  outline-offset: 2px;
+}
+
+.theme-toggle-track {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background-color: #e9e9ea;
+  border-radius: 16px;
+  transition: background-color 0.3s ease;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Visually-hidden native checkbox  */
+.theme-toggle-input {
+  position: absolute;
+  opacity: 0;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  border: 0;
+  padding: 0;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  overflow: hidden;
+}
+
+/* Light mode active state */
+:root:not(.dark-theme) .theme-toggle:hover .theme-toggle-track {
+  background-color: #d1d1d6;
+}
+
+/* Dark mode track */
+.dark-theme .theme-toggle-track {
+  background-color: #39393d;
+}
+
+.dark-theme .theme-toggle:hover .theme-toggle-track {
+  background-color: #434347;
+}
+
+.theme-toggle-thumb {
+  position: absolute;
+  top: 3px;
+  left: 2px; /* default (unchecked) position */
+  width: 26px;
+  height: 26px;
+  background-color: #ffffff;
+  border-radius: 50%;
+  transition: left 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), 
+              /* fallbacks */
+              background-color 0.3s ease,
+              box-shadow 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+}
+
+/* Thumb hover effect */
+.theme-toggle:hover .theme-toggle-thumb {
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+/* Dark mode thumb */
+/* When in dark mode (checked) give lighter thumb for contrast */
+.theme-toggle-input:checked + .theme-toggle-track .theme-toggle-thumb {
+  left: calc(100% - 2px - 26px); /* slide to right */
+  background-color: #f2f2f7;
+}
+
+/* Icon styles */
+.sun-icon,
+.moon-icon {
+  opacity: 0;
+  position: absolute;
+  transition: opacity 0.3s ease, transform 0.5s ease;
+  color: #ff9500;
+}
+
+.moon-icon {
+  color: #5e5ce6;
+}
+
+/* Show sun by default, moon when checked  */
+.sun-icon {
+  opacity: 1;
+  transform: rotate(0deg) scale(1);
+}
+
+.theme-toggle-input:checked + .theme-toggle-track .sun-icon {
+  opacity: 0;
+}
+
+.theme-toggle-input:checked + .theme-toggle-track .moon-icon {
+  opacity: 1;
+  transform: rotate(0deg) scale(1);
+}
+
+/* Icon animations during transition */
+.theme-toggle:active .sun-icon,
+.theme-toggle:active .moon-icon {
+  transform: rotate(360deg) scale(1.1);
+}
+
+/* Focus-visible via input */
+.theme-toggle:focus-within .theme-toggle-track {
+  outline: 2px solid var(--accent-color);
+  outline-offset: 2px;
+}
+
+/* Position the toggle in the header */
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .theme-toggle {
+    width: 48px;
+    height: 28px;
+  }
+  
+  .theme-toggle-thumb {
+    width: 22px;
+    height: 22px;
+  }
+  
+  .theme-toggle-input:checked + .theme-toggle-track .theme-toggle-thumb {
+    left: calc(100% - 2px - 22px);
+  }
+}
+
+@media (max-width: 480px) {
+  .theme-toggle {
+    width: 40px;
+    height: 24px;
+  }
+  
+  .theme-toggle-thumb {
+    width: 18px;
+    height: 18px;
+  }
+  
+  .theme-toggle-input:checked + .theme-toggle-track .theme-toggle-thumb {
+    left: calc(100% - 2px - 18px);
+  }
+  
+  .sun-icon,
+  .moon-icon {
+    width: 12px;
+    height: 12px;
+  }
+}

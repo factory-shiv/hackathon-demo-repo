@@ -1,0 +1,103 @@
+/* App.css - Main styles for Calculator App */
+
+.App {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--spacing-md);
+  gap: var(--spacing-lg);
+}
+
+
+main {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: var(--spacing-md) 0;
+}
+
+.App-footer {
+  text-align: center;
+  padding: var(--spacing-lg) 0 var(--spacing-md);
+  font-size: 0.9rem;
+  color: var(--secondary-color);
+  border-top: 1px solid var(--border-color);
+  margin-top: auto;
+}
+
+.heart {
+  color: #e25555;
+  display: inline-block;
+  margin: 0 var(--spacing-xs);
+  animation: heartbeat 1.5s ease-in-out infinite;
+}
+
+@keyframes heartbeat {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .App {
+    padding: var(--spacing-sm);
+  }
+  
+  .HeaderContent h1 {
+    font-size: 2rem;
+  }
+  
+  .App-footer {
+    padding: var(--spacing-md) 0 var(--spacing-sm);
+  }
+}
+
+@media (max-width: 480px) {
+  .HeaderContent h1 {
+    font-size: 1.75rem;
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* New full-width header bar                                          */
+/* ------------------------------------------------------------------ */
+
+.AppHeader {
+  width: 100%;
+  background: var(--header-bg);
+  color: var(--header-text);
+  border-bottom: 1px solid var(--header-border);
+}
+
+.HeaderContent {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--spacing-md);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-md);
+}
+
+.HeaderContent h1 {
+  font-size: 1.75rem;
+  font-weight: 600;
+  letter-spacing: -0.25px;
+  color: inherit; /* inherit header text colour */
+  margin: 0;
+}
+
+@media (min-width: 769px) {
+  .HeaderContent h1 {
+    font-size: 2rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .HeaderContent h1 {
+    font-size: 2.25rem;
+  }
+}

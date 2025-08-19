@@ -1,0 +1,177 @@
+/* 
+ * SoundToggle.css
+ * Styles for the sound toggle switch component
+ * Matches ThemeToggle design with a blue/gray color scheme
+ */
+
+/* Container for the toggle switch */
+.sound-toggle {
+  position: relative;
+  display: inline-block;
+  width: 52px;
+  height: 26px;
+  margin: 0 8px;
+  cursor: pointer;
+  user-select: none;
+  vertical-align: middle;
+}
+
+/* Hide the default checkbox input */
+.sound-toggle-input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+  position: absolute;
+}
+
+/* The track/background of the toggle */
+.sound-toggle-track {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  border-radius: 34px;
+  transition: background-color 0.3s ease;
+}
+
+/* The moving thumb/circle of the toggle */
+.sound-toggle-thumb {
+  position: absolute;
+  height: 22px;
+  width: 22px;
+  left: 2px;
+  bottom: 2px;
+  background-color: white;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Move the thumb when checked */
+.sound-toggle-input:checked + .sound-toggle-track .sound-toggle-thumb {
+  transform: translateX(26px);
+}
+
+/* Change track color when checked */
+.sound-toggle-input:checked + .sound-toggle-track {
+  background-color: #4285f4; /* Google blue */
+}
+
+/* Hover effects */
+.sound-toggle:hover .sound-toggle-track {
+  box-shadow: 0 0 2px 1px rgba(66, 133, 244, 0.3);
+}
+
+.sound-toggle:hover .sound-toggle-thumb {
+  box-shadow: 0 0 4px 2px rgba(0, 0, 0, 0.1);
+}
+
+/* Focus styles for accessibility */
+.sound-toggle-input:focus-visible + .sound-toggle-track {
+  outline: 2px solid #4285f4;
+  outline-offset: 2px;
+}
+
+/* Icon styling */
+.sound-on-icon,
+.sound-off-icon {
+  color: #4285f4;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.sound-toggle-input:not(:checked) + .sound-toggle-track .sound-on-icon,
+.sound-toggle-input:checked + .sound-toggle-track .sound-off-icon {
+  opacity: 0;
+  transform: scale(0.7);
+}
+
+/* Dark theme adjustments */
+.dark-theme .sound-toggle-track {
+  background-color: #555;
+}
+
+.dark-theme .sound-toggle-input:checked + .sound-toggle-track {
+  background-color: #5f9bff; /* Lighter blue for dark mode */
+}
+
+.dark-theme .sound-toggle-thumb {
+  background-color: #e0e0e0;
+}
+
+.dark-theme .sound-on-icon,
+.dark-theme .sound-off-icon {
+  color: #5f9bff;
+}
+
+.dark-theme .sound-toggle:hover .sound-toggle-track {
+  box-shadow: 0 0 2px 1px rgba(95, 155, 255, 0.4);
+}
+
+.dark-theme .sound-toggle-input:focus-visible + .sound-toggle-track {
+  outline-color: #5f9bff;
+}
+
+/* Tooltip styling (appears on hover) */
+.sound-toggle::after {
+  content: attr(title);
+  position: absolute;
+  bottom: -30px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 4px 8px;
+  background-color: rgba(0, 0, 0, 0.7);
+  color: white;
+  border-radius: 4px;
+  font-size: 12px;
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s, visibility 0.2s;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.sound-toggle:hover::after {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Dark theme tooltip adjustment */
+.dark-theme .sound-toggle::after {
+  background-color: rgba(255, 255, 255, 0.9);
+  color: #333;
+}
+
+/* Responsive adjustments for mobile */
+@media (max-width: 480px) {
+  .sound-toggle {
+    width: 44px;
+    height: 22px;
+    margin: 0 5px;
+  }
+  
+  .sound-toggle-thumb {
+    height: 18px;
+    width: 18px;
+  }
+  
+  .sound-toggle-input:checked + .sound-toggle-track .sound-toggle-thumb {
+    transform: translateX(22px);
+  }
+  
+  .sound-on-icon,
+  .sound-off-icon {
+    width: 14px;
+    height: 14px;
+  }
+  
+  /* Hide tooltip on small screens to save space */
+  .sound-toggle:hover::after {
+    display: none;
+  }
+}
