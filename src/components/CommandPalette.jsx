@@ -26,7 +26,6 @@ const CommandPalette = () => {
       title: `Switch to ${isDarkMode ? 'Light' : 'Dark'} Theme`,
       subtitle: 'Change the appearance of the calculator',
       keywords: ['theme', 'dark', 'light', 'mode', 'appearance', 'color'],
-      shortcut: '⌘D',
       run: () => {
         toggleTheme();
         return 'Theme toggled';
@@ -37,7 +36,6 @@ const CommandPalette = () => {
       title: `Turn Sounds ${soundManager.getSettings().enabled ? 'Off' : 'On'}`,
       subtitle: 'Enable or disable calculator sound effects',
       keywords: ['sound', 'audio', 'mute', 'volume', 'effects'],
-      shortcut: '⌘S',
       run: () => {
         const newState = soundManager.toggleSounds();
         return `Sounds turned ${newState ? 'on' : 'off'}`;
@@ -48,7 +46,7 @@ const CommandPalette = () => {
       title: 'Clear Calculator (AC)',
       subtitle: 'Reset the calculator to start fresh',
       keywords: ['clear', 'reset', 'ac', 'all clear', 'start over'],
-      shortcut: 'Esc',
+      shortcut: 'Esc or C',
       run: () => {
         const clearButton = document.querySelector('.key-clear');
         if (clearButton) clearButton.click();
@@ -60,7 +58,7 @@ const CommandPalette = () => {
       title: 'Copy Display Value',
       subtitle: 'Copy the current calculator display to clipboard',
       keywords: ['copy', 'clipboard', 'value', 'display', 'result'],
-      shortcut: '⌘C',
+      shortcut: '⌘/Ctrl+C',
       run: async () => {
         const displayElement = document.querySelector('.value-display');
         if (!displayElement) return 'No value to copy';
@@ -127,13 +125,10 @@ const CommandPalette = () => {
       title: 'Show Keyboard Shortcuts',
       subtitle: 'Display a list of available keyboard shortcuts',
       keywords: ['keyboard', 'shortcuts', 'keys', 'help', 'commands'],
-      shortcut: '?',
       run: () => {
-        setRunFeedback(`
-          Calculator: 0-9 (numbers), +/-/*/÷ (operators), = or Enter (equals), 
-          Esc (clear), Backspace (delete), . (decimal), % (percent), 
-          R (square root), S (square), I (reciprocal)
-        `);
+        setRunFeedback(
+          'Cmd/Ctrl+K open palette • 0-9 numbers • . decimal • + - * / operators • = or Enter equals • Esc or C clear • Backspace delete • % percentage • R sqrt • S square • I reciprocal • Cmd/Ctrl+C copy • Cmd/Ctrl+V paste'
+        );
         return null; // Don't close palette, keep feedback visible
       }
     }
