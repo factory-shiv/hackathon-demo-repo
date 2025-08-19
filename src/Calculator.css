@@ -13,6 +13,7 @@
   display: flex;
   flex-direction: column;
   transition:
+    max-width 0.25s ease,
     transform 0.3s ease,
     box-shadow 0.3s ease,
     background-color var(--transition-speed) var(--transition-timing),
@@ -122,6 +123,7 @@
   display: grid;
   grid-template-columns: 3fr 1fr;
   /* More breathing room around keys */
+  gap: 0.75rem;
   padding: 1rem;
   gap: 0.75rem;
   background-color: var(--bg-color);
@@ -130,11 +132,18 @@
 .input-keys {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
-}
+  display: grid;
+  /* Allow graceful wrapping when screen gets narrow */
+  grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
 
 .function-keys {
   display: grid;
+/* Memory buttons share the advanced grid but need a calmer color */
+.advanced-keys .memory-btn {
+  background-color: var(--function-bg);
+  color: var(--function-text);
+}
+
   grid-template-columns: repeat(3, 1fr);
   gap: 0.75rem;
 }
@@ -142,8 +151,25 @@
 .digit-keys {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  grid-template-rows: repeat(4, 1fr);
-  gap: 0.75rem;
+
+  /* Make the Sci/Basic toggle (last button) stand out */
+}
+
+/* style the last button (= Sci / Basic toggle) in the function row */
+.function-keys .calculator-key:last-child {
+  background-color: #ffb703; /* amber tone */
+  color: #222222;
+  font-weight: 600;
+}
+
+.function-keys .calculator-key:last-child:hover {
+  background-color: #ffc833;
+}
+
+.function-keys .calculator-key:last-child:active,
+.function-keys .calculator-key:last-child.active {
+  background-color: #e6a200;
+  transform: translateY(1px);
 }
 
 .advanced-keys {
@@ -151,15 +177,26 @@
   grid-template-columns: repeat(3, 1fr);
   gap: 0.75rem;
 }
-
-.key-0 {
-  grid-column: 1 / span 2;
+/* Memory buttons active state overrides */
+.advanced-keys .memory-btn:hover {
+  background-color: var(--btn-hover-bg);
+  color: var(--text-color);
 }
 
-.operator-keys {
-  display: grid;
+.key-equals {
+.key-0 {
+  grid-column: 1 / span 2;
   grid-template-columns: 1fr;
   gap: 0.75rem;
+.key-clear {
+  color: var(--error-color);
+}
+
+/* Wider layout when scientific mode is active (component adds `.scientific` class) */
+.calculator.scientific {
+  max-width: 80vw;
+}
+
 }
 
 /* Button styling */
@@ -228,8 +265,8 @@
 .key-equals {
   background-color: var(--equals-bg) !important;
   color: var(--equals-text);
-}
-
+  .calculator {
+    max-width: 80vw;
 .key-clear {
   color: var(--error-color);
 }
@@ -331,4 +368,33 @@
   outline: 2px solid var(--primary-color);
   outline-offset: 2px;
   box-shadow: 0 0 0 4px rgba(67, 97, 238, 0.3);
+}
+
+/* -------------------------------------------------------------
+   Scientific-specific colour tweaks
+--------------------------------------------------------------*/
+.advanced-keys .calculator-key {
+  /* violet base for scientific buttons */
+  background-color: #6f4af6;
+  color: #ffffff;
+}
+
+.advanced-keys .calculator-key:hover {
+  background-color: #7c5df7;
+}
+
+.advanced-keys .calculator-key:active,
+.advanced-keys .calculator-key.active {
+  background-color: #5a3fd1;
+}
+
+/* Memory buttons get calmer tone but still inside .advanced-keys */
+.advanced-keys .memory-btn {
+  background-color: var(--function-bg);
+  color: var(--function-text);
+}
+
+.advanced-keys .memory-btn:hover {
+  background-color: var(--btn-hover-bg);
+  color: var(--text-color);
 }

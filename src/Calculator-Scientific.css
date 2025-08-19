@@ -1,0 +1,503 @@
+/* Calculator-Scientific.css - Enhanced styling for scientific calculator mode */
+
+/* -------------------------------------------------------------
+   Base calculator styles with scientific mode adjustments
+-------------------------------------------------------------- */
+.calculator {
+  width: 100%;
+  max-width: 350px; /* Default width for basic mode */
+  min-width: 320px;
+  background-color: var(--bg-color);
+  border-radius: 16px;
+  box-shadow: 0 10px 30px var(--shadow-color), 0 5px 15px var(--shadow-color);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition:
+    max-width 0.3s ease,
+    transform 0.3s ease,
+    box-shadow 0.3s ease,
+    background-color var(--transition-speed) var(--transition-timing),
+    color var(--transition-speed) var(--transition-timing);
+}
+
+/* Scientific mode gets wider to accommodate additional buttons */
+.calculator.scientific-mode {
+  max-width: 500px;
+  transition: max-width 0.3s ease-in-out;
+}
+
+.calculator:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.18), 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* -------------------------------------------------------------
+   Display area styling
+-------------------------------------------------------------- */
+.calculator-display {
+  background-color: var(--bg-color);
+  padding: 1.5rem;
+  text-align: right;
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  min-height: 120px;
+  justify-content: flex-end;
+}
+
+.operation-display {
+  font-size: 1rem;
+  color: var(--secondary-color);
+  min-height: 1.5rem;
+  margin-bottom: 0.5rem;
+  opacity: 0.8;
+  font-weight: 400;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.value-display {
+  font-size: 2.5rem;
+  font-weight: 600;
+  color: var(--text-color);
+  line-height: 1.2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+  /* Make room for the copy button */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.memory-indicator {
+  font-size: 0.75rem;
+  color: #ffb703; /* amber to match toggle button */
+  margin-right: 0.5rem;
+  font-weight: bold;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.memory-active .memory-indicator {
+  opacity: 1;
+}
+
+.copy-btn {
+  font-size: 1rem;
+  background: transparent;
+  border: none;
+  color: var(--secondary-color);
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+  border-radius: 6px;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    transform 0.1s ease;
+}
+
+.copy-btn:hover,
+.copy-btn:focus-visible {
+  background-color: var(--btn-hover-bg);
+  color: var(--text-color);
+}
+
+.copy-btn:active {
+  transform: scale(0.95);
+}
+
+/* Copy / Paste status feedback */
+.copy-status {
+  font-size: 0.75rem;
+  color: var(--secondary-color);
+  margin-top: 0.25rem;
+  text-align: right;
+  opacity: 0;
+  animation: statusFade 1.5s forwards;
+}
+
+@keyframes statusFade {
+  0%   { opacity: 0; transform: translateY(-4px); }
+  10%  { opacity: 1; transform: translateY(0);    }
+  90%  { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+.error-display {
+  color: var(--error-color);
+  font-size: 0.875rem;
+  margin-top: 0.5rem;
+  min-height: 1.25rem;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* -------------------------------------------------------------
+   Keypad layout and grid structure
+-------------------------------------------------------------- */
+.calculator-keypad {
+  display: grid;
+  grid-template-columns: 3fr 1fr; /* Main grid: input keys + operator keys */
+  gap: 0.75rem;
+  padding: 1rem;
+  background-color: var(--bg-color);
+}
+
+.input-keys {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+/* Function keys row (AC, +/-, %, Sci/Basic) */
+.function-keys {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.75rem;
+}
+
+/* Scientific function rows */
+.scientific-keys {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem;
+  animation: fadeIn 0.3s ease;
+}
+
+/* Memory function row */
+.memory-keys {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.75rem;
+  animation: fadeIn 0.3s ease;
+}
+
+/* Advanced operation keys */
+.advanced-keys {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem;
+}
+
+/* Digit keys grid */
+.digit-keys {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(4, 1fr);
+  gap: 0.75rem;
+}
+
+/* Operator keys column */
+.operator-keys {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.75rem;
+}
+
+/* Zero key spans two columns */
+.key-0 {
+  grid-column: 1 / span 2;
+}
+
+/* -------------------------------------------------------------
+   Button styling for different types
+-------------------------------------------------------------- */
+/* Base button styling */
+.calculator-key {
+  border-radius: 12px;
+  font-size: 1.6rem;
+  font-weight: 500;
+  height: 65px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+  transition:
+    background-color var(--transition-speed) var(--transition-timing),
+    color var(--transition-speed) var(--transition-timing),
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
+  border: none;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Digit buttons */
+.digit-keys .calculator-key {
+  background-color: var(--digit-bg);
+  color: var(--digit-text);
+}
+
+/* Function buttons (AC, +/-, %) */
+.function-keys .calculator-key {
+  background-color: var(--function-bg);
+  color: var(--function-text);
+  font-size: 1.4rem;
+}
+
+/* Sci/Basic toggle button - amber/orange color */
+.toggle-scientific {
+  background-color: #ffb703 !important; /* amber tone */
+  color: #222222 !important;
+  font-weight: 600;
+  font-size: 1.2rem !important;
+}
+
+.toggle-scientific:hover {
+  background-color: #ffc833 !important;
+}
+
+.toggle-scientific:active,
+.toggle-scientific.active {
+  background-color: #e6a200 !important;
+  transform: translateY(1px);
+}
+
+/* Scientific function buttons - purple theme */
+.scientific-keys .calculator-key {
+  background-color: #6f4af6; /* violet base */
+  color: #ffffff;
+  font-size: 1.3rem;
+}
+
+.scientific-keys .calculator-key:hover {
+  background-color: #7c5df7; /* lighter purple */
+}
+
+.scientific-keys .calculator-key:active,
+.scientific-keys .calculator-key.active {
+  background-color: #5a3fd1; /* darker purple */
+  transform: translateY(1px);
+}
+
+/* Memory buttons - distinct styling */
+.memory-keys .calculator-key {
+  background-color: #3a7ca5; /* blue-teal */
+  color: #ffffff;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.memory-keys .calculator-key:hover {
+  background-color: #4a8cb5;
+}
+
+.memory-keys .calculator-key:active,
+.memory-keys .calculator-key.active {
+  background-color: #2a6c95;
+  transform: translateY(1px);
+}
+
+/* Advanced operation buttons */
+.advanced-keys .calculator-key {
+  background-color: var(--function-bg);
+  color: var(--function-text);
+}
+
+/* Operator buttons */
+.operator-keys .calculator-key {
+  background-color: var(--operator-bg);
+  color: var(--operator-text);
+}
+
+/* Equals button */
+.key-equals {
+  background-color: var(--equals-bg) !important;
+  color: var(--equals-text);
+}
+
+/* Clear button */
+.key-clear {
+  color: var(--error-color);
+}
+
+/* -------------------------------------------------------------
+   Button states (hover, active, keyboard feedback)
+-------------------------------------------------------------- */
+/* Hover state */
+.calculator-key:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  background-color: var(--btn-hover-bg);
+}
+
+/* Active (pressed) state */
+.calculator-key:active {
+  transform: translateY(1px);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  background-color: var(--btn-active-bg);
+}
+
+/* Keyboard "active" state - triggered via JS */
+.calculator-key.active {
+  transform: translateY(2px) scale(0.97);
+  box-shadow: 0 0 0 rgba(0, 0, 0, 0); /* appear pressed in */
+  background-color: var(--btn-active-bg);
+}
+
+/* Maintain pressed look while physical button is also clicked */
+.calculator-key.active:active {
+  transform: translateY(2px) scale(0.96);
+}
+
+/* Accessibility focus styles */
+.calculator-key:focus-visible {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px rgba(67, 97, 238, 0.3);
+}
+
+/* -------------------------------------------------------------
+   Animation effects
+-------------------------------------------------------------- */
+/* Success animation */
+.success-animation {
+  animation: successPulse 0.5s ease;
+}
+
+@keyframes successPulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.02); box-shadow: 0 0 20px rgba(46, 213, 115, 0.4); }
+  100% { transform: scale(1); }
+}
+
+/* Error animation */
+.error-animation {
+  animation: errorShake 0.5s ease;
+}
+
+@keyframes errorShake {
+  0% { transform: translateX(0); }
+  25% { transform: translateX(-8px); }
+  50% { transform: translateX(8px); }
+  75% { transform: translateX(-4px); }
+  100% { transform: translateX(0); }
+}
+
+/* Scientific mode transition */
+.scientific-transition-enter {
+  opacity: 0;
+  transform: translateY(-10px);
+}
+
+.scientific-transition-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 300ms, transform 300ms;
+}
+
+.scientific-transition-exit {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.scientific-transition-exit-active {
+  opacity: 0;
+  transform: translateY(-10px);
+  transition: opacity 300ms, transform 300ms;
+}
+
+/* -------------------------------------------------------------
+   Responsive design adjustments
+-------------------------------------------------------------- */
+/* Tablet styles */
+@media (max-width: 768px) {
+  .calculator {
+    max-width: 70vw;
+  }
+  
+  .calculator.scientific-mode {
+    max-width: 90vw;
+  }
+  
+  .calculator-key {
+    height: 60px;
+    font-size: 1.4rem;
+  }
+  
+  .scientific-keys .calculator-key,
+  .memory-keys .calculator-key {
+    font-size: 1.1rem;
+  }
+}
+
+/* Mobile styles */
+@media (max-width: 480px) {
+  .calculator {
+    max-width: 95vw;
+    min-width: 280px;
+  }
+  
+  .calculator.scientific-mode {
+    max-width: 95vw;
+  }
+  
+  .calculator-display {
+    padding: 1rem;
+    min-height: 100px;
+  }
+  
+  .value-display {
+    font-size: 2rem;
+  }
+  
+  .calculator-key {
+    height: 50px;
+    font-size: 1.25rem;
+  }
+  
+  .scientific-keys .calculator-key,
+  .memory-keys .calculator-key {
+    font-size: 1rem;
+    padding: 0 0.25rem;
+  }
+  
+  .calculator-keypad {
+    padding: 0.5rem;
+    gap: 0.5rem;
+  }
+  
+  .function-keys,
+  .scientific-keys,
+  .memory-keys,
+  .advanced-keys,
+  .digit-keys {
+    gap: 0.5rem;
+  }
+  
+  /* Stack scientific buttons in portrait mode */
+  .scientific-mode .calculator-keypad {
+    grid-template-columns: 1fr;
+  }
+  
+  .scientific-mode .operator-keys {
+    grid-template-columns: repeat(5, 1fr);
+    order: 2;
+  }
+}
+
+/* Touch-friendly adjustments for mobile */
+@media (hover: none) and (pointer: coarse) {
+  .calculator-key {
+    padding: 0.75rem;
+    min-height: 60px;
+  }
+  
+  .calculator-key:hover {
+    transform: none;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .calculator-key:active {
+    background-color: rgba(0, 0, 0, 0.05);
+    transform: scale(0.98);
+  }
+}
