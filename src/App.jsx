@@ -4,6 +4,7 @@ import './App.css';
 import { ThemeProvider } from './contexts/ThemeContext';
 import ThemeToggle from './components/ThemeToggle';
 import SoundToggle from './components/SoundToggle';
+import CommandPalette from './components/CommandPalette';
 
 function App() {
   return (
@@ -16,6 +17,9 @@ function App() {
           <SoundToggle />
         </div>
       </header>
+
+      {/* Global command palette (Cmd/Ctrl + K) */}
+      <CommandPalette />
 
       {/* Constrained main application area */}
       <div className="App">

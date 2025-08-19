@@ -258,6 +258,18 @@ const Calculator = () => {
    * ------------------------------------------------------------------ */
   useEffect(() => {
     const keyDownHandler = (e) => {
+      // ------------------------------------------------------------------
+      // Ignore global shortcuts while typing in inputs, textareas, or any
+      // element with contenteditable to prevent conflicts with components
+      // like the Command Palette search box.
+      // ------------------------------------------------------------------
+      const tag = (e.target && e.target.tagName)
+        ? e.target.tagName.toUpperCase()
+        : '';
+      if (tag === 'INPUT' || tag === 'TEXTAREA' || e.target?.isContentEditable) {
+        return;
+      }
+
       const { key } = e;
 
       // Handle copy (Ctrl/Cmd + C)
