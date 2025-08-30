@@ -13,9 +13,67 @@ const Calculator = () => {
   const [activeKey, setActiveKey] = useState(null); // for visual feedback
   const [copyStatus, setCopyStatus] = useState(''); // feedback for copy / paste
   const [animationClass, setAnimationClass] = useState(''); // for enhanced animations
+
+  /* ------------------------------------------------------------------
+   * History tape (persistent)
+   * ------------------------------------------------------------------ */
+  const HISTORY_STORAGE_KEY = 'calculator_history';
+  const HISTORY_LIMIT = 20;
+
+  // Lazy-load history from localStorage
+  const [history, setHistory] = useState(() => {
+    try {
+      const raw = localStorage.getItem(HISTORY_STORAGE_KEY);
+      const parsed = JSON.parse(raw);
+      return Array.isArray(parsed) ? parsed : [];
+    } catch {
+      return [];
+    }
+  });
   
   // Refs for animation timeouts
   const animationTimeoutRef = useRef(null);
+
+  // Persist history whenever it changes
+  useEffect(() => {
+    try {
+      localStorage.setItem(HISTORY_STORAGE_KEY, JSON.stringify(history));
+    } catch {
+      /* ignore quota / private-mode failures */
+    }
+  }, [history]);
+
+  // Add a new entry to the history tape
+  const addHistoryEntry = (expression, result) => {
+    const entry = {
+      id: Date.now() + '-' + Math.random().toString(36).slice(2, 7),
+      expression,
+      result,
+      timestamp: Date.now(),
+    };
+    setHistory((prev) => [entry, ...prev].slice(0, HISTORY_LIMIT));
+  };
+
+  // Reuse a result from history
+  const reuseFromHistory = (item) => {
+    setDisplayValue(String(item.result));
+    setPreviousValue(null);
+    setOperation(null);
+    setWaitingForOperand(false);
+    setError('');
+    playButtonSound('function');
+    addVisualFeedback('success-animation');
+  };
+
+  // Clear entire history
+  const clearHistory = () => {
+    setHistory([]);
+    try {
+      localStorage.removeItem(HISTORY_STORAGE_KEY);
+    } catch {
+      /* ignore */
+    }
+  };
 
   /* ------------------------------------------------------------------
    * Sound and visual feedback helpers
@@ -182,6 +240,7 @@ const Calculator = () => {
       setError('');
       playButtonSound('equals');
       addVisualFeedback('success-animation');
+      addHistoryEntry(`${previousValue} ${operation} ${inputValue}`, result);
     }
     
     // Reset for a new calculation
@@ -215,6 +274,7 @@ const Calculator = () => {
     } else {
       setDisplayValue(String(result));
       addVisualFeedback('success-animation');
+      addHistoryEntry(`√(${value})`, result);
     }
     
     setWaitingForOperand(true);
@@ -229,6 +289,7 @@ const Calculator = () => {
     const result = value * value;
     setDisplayValue(String(result));
     addVisualFeedback('success-animation');
+    addHistoryEntry(`${value}²`, result);
     setWaitingForOperand(true);
   };
 
@@ -248,6 +309,7 @@ const Calculator = () => {
       const result = 1 / value;
       setDisplayValue(String(result));
       addVisualFeedback('success-animation');
+      addHistoryEntry(`1/(${value})`, result);
     }
     
     setWaitingForOperand(true);
@@ -335,7 +397,9 @@ const Calculator = () => {
           e.preventDefault();
           // mimic % button
           playButtonSound('function');
-          setDisplayValue(String(parseFloat(displayValue) / 100));
+          const v = parseFloat(displayValue);
+          setDisplayValue(String(v / 100));
+          addHistoryEntry(`${v}%`, v / 100);
           break;
         case 'r':
           e.preventDefault();
@@ -484,6 +548,7 @@ const Calculator = () => {
                 playButtonSound('function');
                 const value = parseFloat(displayValue);
                 setDisplayValue(String(value / 100));
+                addHistoryEntry(`${value}%`, value / 100);
               }}
             >
               %
@@ -534,6 +599,37 @@ const Calculator = () => {
           <button className={'calculator-key key-equals' + getActiveClass('enter')} onClick={handleEquals}>=</button>
         </div>
       </div>
+      
+      <section className="history-panel" aria-label="Calculation history">
+        <div className="history-header">
+          <h3>History</h3>
+          <button className="history-clear" onClick={clearHistory} aria-label="Clear history">Clear</button>
+        </div>
+        {history.length === 0 ? (
+          <div className="history-empty">No history yet</div>
+        ) : (
+          <ul className="history-list">
+            {history.map((item) => (
+              <li
+                key={item.id}
+                className="history-item"
+                role="button"
+                tabIndex={0}
+                onClick={() => reuseFromHistory(item)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); reuseFromHistory(item); }
+                }}
+              >
+                <div className="history-row">
+                  <div className="history-expression">{item.expression} =</div>
+                  <div className="history-result">{item.result}</div>
+                </div>
+                <div className="history-meta">{new Date(item.timestamp).toLocaleTimeString()}</div>
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
     </div>
   );
 };
