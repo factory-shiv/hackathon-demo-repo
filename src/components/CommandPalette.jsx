@@ -33,7 +33,8 @@ const CommandPalette = () => {
       run: () => {
         toggleTheme();
         return 'Theme toggled';
-      },
+      }
+    },
     {
       id: 'toggle-sounds',
       title: `Turn Sounds ${soundManager.getSettings().enabled ? 'Off' : 'On'}`,
