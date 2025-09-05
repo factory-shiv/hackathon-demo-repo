@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import Fuse from 'fuse.js';
 import { useTheme } from '../contexts/ThemeContext';
+import { useNumberFormat } from '../contexts/NumberFormatContext';
 import soundManager from '../utils/soundManager';
 import '../styles/CommandPalette.css';
 
@@ -19,6 +20,9 @@ const CommandPalette = () => {
   // Theme context
   const { isDarkMode, toggleTheme } = useTheme();
 
+  // Number formatting context
+  const { formattingEnabled, toggleFormatting } = useNumberFormat();
+
   // Define available actions
   const actions = useMemo(() => [
     {
@@ -29,8 +33,7 @@ const CommandPalette = () => {
       run: () => {
         toggleTheme();
         return 'Theme toggled';
-      }
-    },
+      },
     {
       id: 'toggle-sounds',
       title: `Turn Sounds ${soundManager.getSettings().enabled ? 'Off' : 'On'}`,
@@ -63,7 +66,9 @@ const CommandPalette = () => {
         const displayElement = document.querySelector('.value-display');
         if (!displayElement) return 'No value to copy';
         
-        const value = displayElement.textContent.trim();
+        const value = displayElement.dataset.raw
+          ? displayElement.dataset.raw.trim()
+          : displayElement.textContent.trim();
         try {
           await navigator.clipboard.writeText(value);
           return 'Value copied to clipboard';
@@ -121,6 +126,16 @@ const CommandPalette = () => {
       }
     },
     {
+      id: 'toggle-number-formatting',
+      title: `Turn Formatting ${formattingEnabled ? 'Off' : 'On'}`,
+      subtitle: 'Enable or disable thousands separators',
+      keywords: ['format', 'number', 'separator', 'comma', 'grouping'],
+      run: () => {
+        toggleFormatting();
+        return `Number formatting turned ${formattingEnabled ? 'off' : 'on'}`;
+      }
+    },
+    {
       id: 'keyboard-shortcuts',
       title: 'Show Keyboard Shortcuts',
       subtitle: 'Display a list of available keyboard shortcuts',
@@ -132,7 +147,7 @@ const CommandPalette = () => {
         return null; // Don't close palette, keep feedback visible
       }
     }
-  ], [isDarkMode, toggleTheme]);
+  ], [isDarkMode, toggleTheme, formattingEnabled, toggleFormatting]);
 
   // Initialize Fuse for fuzzy search
   const fuse = useMemo(() => {

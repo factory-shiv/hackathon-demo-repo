@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import './Calculator.css';
 import './styles/ButtonEffects.css';
 import soundManager from './utils/soundManager';
+import { useNumberFormat } from './contexts/NumberFormatContext';
 
 const Calculator = () => {
   // State variables
@@ -13,6 +14,32 @@ const Calculator = () => {
   const [activeKey, setActiveKey] = useState(null); // for visual feedback
   const [copyStatus, setCopyStatus] = useState(''); // feedback for copy / paste
   const [animationClass, setAnimationClass] = useState(''); // for enhanced animations
+
+  // Get number formatting context
+  const { formattingEnabled, formatter } = useNumberFormat();
+
+  /* ------------------------------------------------------------------
+   * Number formatting helper
+   * ------------------------------------------------------------------ */
+  const formatDisplay = (raw) => {
+    // Don't format if formatting is disabled
+    if (!formattingEnabled) return raw;
+    
+    // Don't format error messages
+    if (raw === 'Error') return raw;
+    
+    // Don't format if it ends with a decimal point (preserve typing state)
+    if (raw.endsWith('.')) return raw;
+    
+    try {
+      // Parse and format the number
+      const number = parseFloat(raw);
+      return formatter.format(number);
+    } catch (e) {
+      // If parsing fails, return the raw value
+      return raw;
+    }
+  };
 
   /* ------------------------------------------------------------------
    * History tape (persistent)
@@ -500,17 +527,49 @@ const Calculator = () => {
     }
   };
 
+  // Format a number for the operation display
+  const formatOperationValue = (value) => {
+    if (value === null || value === undefined) return '';
+    if (!formattingEnabled) return value;
+    
+    try {
+      return formatter.format(value);
+    } catch (e) {
+      return value;
+    }
+  };
+
   // Get the current operation display
   const getOperationDisplay = () => {
-    return operation ? `${previousValue} ${operation}` : '';
+    if (!operation) return '';
+    return `${formatOperationValue(previousValue)} ${operation}`;
+  };
+
+  // Format a history result for display
+  const formatHistoryResult = (result) => {
+    if (!formattingEnabled) return result;
+    if (result === 'Error') return result;
+    
+    try {
+      const num = parseFloat(result);
+      if (isFinite(num)) {
+        return formatter.format(num);
+      }
+    } catch (e) {}
+    
+    return result;
   };
 
   return (
     <div className={`calculator ${animationClass}`}>
       <div className="calculator-display">
         <div className="operation-display">{getOperationDisplay()}</div>
-        <div className="value-display">
-          {displayValue}
+        <div 
+          className="value-display" 
+          data-raw={displayValue}
+          data-formatted={formatDisplay(displayValue)}
+        >
+          {formatDisplay(displayValue)}
           <button
             className="copy-btn"
             title="Copy"
@@ -622,7 +681,7 @@ const Calculator = () => {
               >
                 <div className="history-row">
                   <div className="history-expression">{item.expression} =</div>
-                  <div className="history-result">{item.result}</div>
+                  <div className="history-result">{formatHistoryResult(item.result)}</div>
                 </div>
                 <div className="history-meta">{new Date(item.timestamp).toLocaleTimeString()}</div>
               </li>
