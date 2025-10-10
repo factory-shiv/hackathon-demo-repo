@@ -2,7 +2,9 @@ import React, { useState, useEffect, useMemo, useRef } from 'react';
 import Fuse from 'fuse.js';
 import { useTheme } from '../contexts/ThemeContext';
 import { useNumberFormat } from '../contexts/NumberFormatContext';
+import { useMemory } from '../contexts/MemoryContext';
 import soundManager from '../utils/soundManager';
+import { constants } from '../data/constants';
 import '../styles/CommandPalette.css';
 
 const CommandPalette = () => {
@@ -22,6 +24,9 @@ const CommandPalette = () => {
 
   // Number formatting context
   const { formattingEnabled, toggleFormatting } = useNumberFormat();
+
+  // Memory context
+  const { hasMemory, memoryValue, memoryClear } = useMemory();
 
   // Define available actions
   const actions = useMemo(() => [
@@ -137,18 +142,99 @@ const CommandPalette = () => {
       }
     },
     {
+      id: 'memory-add',
+      title: 'Memory Add (M+)',
+      subtitle: 'Add current value to memory',
+      keywords: ['memory', 'add', 'm+', 'store', 'save'],
+      shortcut: 'Shift+M',
+      run: () => {
+        const button = document.querySelector('.key-m-plus');
+        if (button) button.click();
+        return 'Value added to memory';
+      }
+    },
+    {
+      id: 'memory-subtract',
+      title: 'Memory Subtract (M−)',
+      subtitle: 'Subtract current value from memory',
+      keywords: ['memory', 'subtract', 'm-', 'minus'],
+      shortcut: 'Shift+N',
+      run: () => {
+        const button = document.querySelector('.key-m-minus');
+        if (button) button.click();
+        return 'Value subtracted from memory';
+      }
+    },
+    {
+      id: 'memory-recall',
+      title: 'Memory Recall (MR)',
+      subtitle: 'Recall value from memory',
+      keywords: ['memory', 'recall', 'mr', 'retrieve', 'load'],
+      shortcut: 'Shift+R',
+      run: () => {
+        const button = document.querySelector('.key-mr');
+        if (button && !button.disabled) {
+          button.click();
+          return 'Memory recalled';
+        }
+        return 'Memory is empty';
+      }
+    },
+    {
+      id: 'memory-clear',
+      title: 'Memory Clear (MC)',
+      subtitle: 'Clear memory',
+      keywords: ['memory', 'clear', 'mc', 'delete', 'remove'],
+      shortcut: 'Shift+C',
+      run: () => {
+        if (hasMemory) {
+          memoryClear();
+          return 'Memory cleared';
+        }
+        return 'Memory is already empty';
+      }
+    },
+    {
+      id: 'open-constants',
+      title: 'Open Constants Library',
+      subtitle: 'Browse mathematical and physical constants',
+      keywords: ['constants', 'pi', 'e', 'library', 'math', 'physics'],
+      run: () => {
+        const constantsBtn = document.querySelector('.constants-btn');
+        if (constantsBtn) constantsBtn.click();
+        return 'Constants library opened';
+      }
+    },
+    ...constants.map(constant => ({
+      id: `constant-${constant.id}`,
+      title: `Insert ${constant.name} (${constant.symbol})`,
+      subtitle: `${constant.description} = ${constant.precision}`,
+      keywords: ['constant', ...constant.keywords],
+      run: () => {
+        // Insert constant value into calculator
+        const displayValue = String(constant.value);
+        const calcDisplay = document.querySelector('.value-display');
+        if (calcDisplay) {
+          // Simulate clicking a button to update display
+          const event = new CustomEvent('insertConstant', { detail: { value: constant.value } });
+          window.dispatchEvent(event);
+        }
+        return `Inserted ${constant.name} (${constant.value})`;
+      }
+    })),
+    {
       id: 'keyboard-shortcuts',
       title: 'Show Keyboard Shortcuts',
       subtitle: 'Display a list of available keyboard shortcuts',
       keywords: ['keyboard', 'shortcuts', 'keys', 'help', 'commands'],
       run: () => {
         setRunFeedback(
-          'Cmd/Ctrl+K open palette • 0-9 numbers • . decimal • + - * / operators • = or Enter equals • Esc or C clear • Backspace delete • % percentage • R sqrt • S square • I reciprocal • Cmd/Ctrl+C copy • Cmd/Ctrl+V paste'
+          'Cmd/Ctrl+K open palette • 0-9 numbers • . decimal • + - * / operators • = or Enter equals • Esc or C clear • Backspace delete • % percentage • R sqrt • S square • I reciprocal • Shift+M M+ • Shift+N M− • Shift+R MR • Shift+C MC • Cmd/Ctrl+C copy • Cmd/Ctrl+V paste'
         );
         return null; // Don't close palette, keep feedback visible
       }
     }
-  ], [isDarkMode, toggleTheme, formattingEnabled, toggleFormatting]);
+  ], [isDarkMode, toggleTheme, formattingEnabled, toggleFormatting, hasMemory, memoryValue, memoryClear]);
 
   // Initialize Fuse for fuzzy search
   const fuse = useMemo(() => {

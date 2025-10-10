@@ -1,8 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './Calculator.css';
 import './styles/ButtonEffects.css';
+import './styles/MemoryButtons.css';
 import soundManager from './utils/soundManager';
 import { useNumberFormat } from './contexts/NumberFormatContext';
+import { useMemory } from './contexts/MemoryContext';
+import { exportToCSV, exportToJSON, exportToTXT, downloadFile, importFromFile } from './utils/historyExporter';
+import ConstantsPanel from './components/ConstantsPanel';
 
 const Calculator = () => {
   // State variables
@@ -14,9 +18,15 @@ const Calculator = () => {
   const [activeKey, setActiveKey] = useState(null); // for visual feedback
   const [copyStatus, setCopyStatus] = useState(''); // feedback for copy / paste
   const [animationClass, setAnimationClass] = useState(''); // for enhanced animations
+  const [showExportMenu, setShowExportMenu] = useState(false); // export menu dropdown
+  const [importStatus, setImportStatus] = useState(''); // import feedback
+  const [showConstantsPanel, setShowConstantsPanel] = useState(false); // constants panel
 
   // Get number formatting context
   const { formattingEnabled, formatter } = useNumberFormat();
+
+  // Get memory context
+  const { memoryValue, hasMemory, memoryAdd, memorySubtract, memoryRecall, memoryClear } = useMemory();
 
   /* ------------------------------------------------------------------
    * Number formatting helper
@@ -58,8 +68,9 @@ const Calculator = () => {
     }
   });
   
-  // Refs for animation timeouts
+  // Refs for animation timeouts and file input
   const animationTimeoutRef = useRef(null);
+  const fileInputRef = useRef(null);
 
   // Persist history whenever it changes
   useEffect(() => {
@@ -343,6 +354,51 @@ const Calculator = () => {
   };
 
   /* ------------------------------------------------------------------
+   * Memory operations
+   * ------------------------------------------------------------------ */
+  const handleMemoryAdd = () => {
+    setError('');
+    playButtonSound('function');
+    
+    const value = parseFloat(displayValue);
+    if (!isNaN(value)) {
+      memoryAdd(value);
+      addVisualFeedback('success-animation');
+    }
+  };
+
+  const handleMemorySubtract = () => {
+    setError('');
+    playButtonSound('function');
+    
+    const value = parseFloat(displayValue);
+    if (!isNaN(value)) {
+      memorySubtract(value);
+      addVisualFeedback('success-animation');
+    }
+  };
+
+  const handleMemoryRecall = () => {
+    setError('');
+    playButtonSound('function');
+    
+    const value = memoryRecall();
+    if (value !== null) {
+      setDisplayValue(String(value));
+      setWaitingForOperand(false);
+      addVisualFeedback('success-animation');
+    }
+  };
+
+  const handleMemoryClear = () => {
+    setError('');
+    playButtonSound('function');
+    
+    memoryClear();
+    addVisualFeedback('success-animation');
+  };
+
+  /* ------------------------------------------------------------------
    * Keyboard support
    * ------------------------------------------------------------------ */
   useEffect(() => {
@@ -441,7 +497,41 @@ const Calculator = () => {
           handleReciprocal();
           break;
         default:
-          return; // unmapped key
+          break;
+      }
+
+      // Memory shortcuts (Shift + key)
+      if (e.shiftKey) {
+        switch (lowered) {
+          case 'm':
+            e.preventDefault();
+            handleMemoryAdd();
+            setActiveKey('m+');
+            break;
+          case 'n':
+            e.preventDefault();
+            handleMemorySubtract();
+            setActiveKey('m-');
+            break;
+          case 'r':
+            if (!e.ctrlKey && !e.metaKey) {
+              e.preventDefault();
+              handleMemoryRecall();
+              setActiveKey('mr');
+            }
+            break;
+          case 'c':
+            if (!e.ctrlKey && !e.metaKey) {
+              e.preventDefault();
+              handleMemoryClear();
+              setActiveKey('mc');
+            }
+            break;
+          default:
+            return;
+        }
+      } else if (!['escape', 'c', 'backspace', '%', 'r', 's', 'i'].includes(lowered)) {
+        return; // unmapped key
       }
 
       // Set active key for visual feedback
@@ -510,6 +600,106 @@ const Calculator = () => {
     return () => clearTimeout(t);
   }, [copyStatus]);
 
+  // Clear importStatus after a short delay
+  useEffect(() => {
+    if (!importStatus) return;
+    const t = setTimeout(() => setImportStatus(''), 3000);
+    return () => clearTimeout(t);
+  }, [importStatus]);
+
+  // Handle constant insertion from command palette
+  useEffect(() => {
+    const handleInsertConstant = (e) => {
+      handleSelectConstant(e.detail.value);
+    };
+
+    window.addEventListener('insertConstant', handleInsertConstant);
+    return () => window.removeEventListener('insertConstant', handleInsertConstant);
+  }, []);
+
+  /* ------------------------------------------------------------------
+   * Constants panel operations
+   * ------------------------------------------------------------------ */
+  const handleSelectConstant = (value) => {
+    setDisplayValue(String(value));
+    setWaitingForOperand(false);
+    playButtonSound('function');
+    addVisualFeedback('success-animation');
+  };
+
+  /* ------------------------------------------------------------------
+   * History export/import operations
+   * ------------------------------------------------------------------ */
+  const handleExportCSV = () => {
+    const csv = exportToCSV(history);
+    if (csv) {
+      const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, -5);
+      downloadFile(csv, `calculator-history-${timestamp}.csv`, 'text/csv');
+      playButtonSound('function');
+      addVisualFeedback('success-animation');
+    }
+    setShowExportMenu(false);
+  };
+
+  const handleExportJSON = () => {
+    const json = exportToJSON(history);
+    if (json) {
+      const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, -5);
+      downloadFile(json, `calculator-history-${timestamp}.json`, 'application/json');
+      playButtonSound('function');
+      addVisualFeedback('success-animation');
+    }
+    setShowExportMenu(false);
+  };
+
+  const handleExportTXT = () => {
+    const txt = exportToTXT(history);
+    if (txt) {
+      const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, -5);
+      downloadFile(txt, `calculator-history-${timestamp}.txt`, 'text/plain');
+      playButtonSound('function');
+      addVisualFeedback('success-animation');
+    }
+    setShowExportMenu(false);
+  };
+
+  const handleImportClick = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+    setShowExportMenu(false);
+  };
+
+  const handleFileChange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    try {
+      const importedHistory = await importFromFile(file);
+      
+      if (importedHistory && importedHistory.length > 0) {
+        // Merge with existing history, keeping unique entries
+        const existingIds = new Set(history.map(h => h.id));
+        const newEntries = importedHistory.filter(h => !existingIds.has(h.id));
+        const mergedHistory = [...newEntries, ...history].slice(0, 20);
+        
+        setHistory(mergedHistory);
+        setImportStatus(`Imported ${importedHistory.length} entries`);
+        playButtonSound('function');
+        addVisualFeedback('success-animation');
+      }
+    } catch (error) {
+      setImportStatus(`Import failed: ${error.message}`);
+      playButtonSound('error');
+      addVisualFeedback('error-animation');
+    }
+
+    // Reset file input
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
   // Calculate function to perform the actual math
   const calculate = (firstValue, secondValue, op) => {
     switch (op) {
@@ -561,8 +751,20 @@ const Calculator = () => {
   };
 
   return (
-    <div className={`calculator ${animationClass}`}>
-      <div className="calculator-display">
+    <>
+      <div className={`calculator ${animationClass}`}>
+        <div className="calculator-controls">
+          <button
+            className="constants-btn"
+            onClick={() => setShowConstantsPanel(true)}
+            title="Open constants library"
+            aria-label="Open constants library"
+          >
+            π
+          </button>
+        </div>
+        
+        <div className="calculator-display">
         <div className="operation-display">{getOperationDisplay()}</div>
         <div 
           className="value-display" 
@@ -585,6 +787,39 @@ const Calculator = () => {
       
       <div className="calculator-keypad">
         <div className="input-keys">
+          <div className="memory-keys">
+            <button 
+              className={'calculator-key key-memory key-mc' + getActiveClass('mc')} 
+              onClick={handleMemoryClear}
+              disabled={!hasMemory}
+              title="Memory Clear (Shift+C)"
+            >
+              MC
+            </button>
+            <button 
+              className={'calculator-key key-memory key-mr' + getActiveClass('mr')} 
+              onClick={handleMemoryRecall}
+              disabled={!hasMemory}
+              title="Memory Recall (Shift+R)"
+            >
+              MR
+            </button>
+            <button 
+              className={'calculator-key key-memory key-m-minus' + getActiveClass('m-')} 
+              onClick={handleMemorySubtract}
+              title="Memory Subtract (Shift+N)"
+            >
+              M−
+            </button>
+            <button 
+              className={'calculator-key key-memory key-m-plus' + getActiveClass('m+')} 
+              onClick={handleMemoryAdd}
+              title="Memory Add (Shift+M)"
+            >
+              M+
+            </button>
+          </div>
+          
           <div className="function-keys">
             <button 
               className={'calculator-key key-clear' + getActiveClass('escape')} 
@@ -662,8 +897,44 @@ const Calculator = () => {
       <section className="history-panel" aria-label="Calculation history">
         <div className="history-header">
           <h3>History</h3>
-          <button className="history-clear" onClick={clearHistory} aria-label="Clear history">Clear</button>
+          <div className="history-actions">
+            <button 
+              className="history-clear" 
+              onClick={clearHistory} 
+              aria-label="Clear history"
+              disabled={history.length === 0}
+            >
+              Clear
+            </button>
+            <div className="history-export-menu">
+              <button 
+                className="history-export-btn" 
+                onClick={() => setShowExportMenu(!showExportMenu)}
+                aria-label="Export history menu"
+                disabled={history.length === 0}
+              >
+                ⋮
+              </button>
+              {showExportMenu && (
+                <div className="export-dropdown">
+                  <button onClick={handleExportCSV}>Export as CSV</button>
+                  <button onClick={handleExportJSON}>Export as JSON</button>
+                  <button onClick={handleExportTXT}>Export as TXT</button>
+                  <button onClick={handleImportClick}>Import History</button>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
+        {importStatus && <div className="import-status">{importStatus}</div>}
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept=".json,.csv,.txt"
+          onChange={handleFileChange}
+          style={{ display: 'none' }}
+          aria-hidden="true"
+        />
         {history.length === 0 ? (
           <div className="history-empty">No history yet</div>
         ) : (
@@ -689,7 +960,14 @@ const Calculator = () => {
           </ul>
         )}
       </section>
-    </div>
+      </div>
+      
+      <ConstantsPanel
+        isOpen={showConstantsPanel}
+        onClose={() => setShowConstantsPanel(false)}
+        onSelectConstant={handleSelectConstant}
+      />
+    </>
   );
 };
 
