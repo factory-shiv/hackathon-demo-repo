@@ -9,18 +9,26 @@ const UnitConverterPanel = ({ isOpen, onClose, onInsertValue }) => {
   const [toUnitId, setToUnitId] = useState('ft');
   const [copyStatus, setCopyStatus] = useState('');
   const panelRef = useRef(null);
-  const searchInputRef = useRef(null);
+  const inputRef = useRef(null);
 
-  // Update units when category changes
+  // When category changes, reset unit selections
   useEffect(() => {
     const units = getUnitsByCategory(activeCategory);
     if (units && units.length >= 2) {
       setFromUnitId(units[0].id);
-      setToUnitId(units[1].id || units[0].id);
+      setToUnitId(units[1].id);
+    } else if (units && units.length === 1) {
+      setFromUnitId(units[0].id);
+      setToUnitId(units[0].id);
     }
   }, [activeCategory]);
 
-  // Handle outside clicks
+  useEffect(() => {
+    if (isOpen && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [isOpen]);
+
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (panelRef.current && !panelRef.current.contains(e.target)) {
@@ -28,23 +36,19 @@ const UnitConverterPanel = ({ isOpen, onClose, onInsertValue }) => {
       }
     };
 
-    if (isOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
-      return () => document.removeEventListener('mousedown', handleClickOutside);
-    }
-  }, [isOpen, onClose]);
-
-  // Handle escape key
-  useEffect(() => {
     const handleEscape = (e) => {
-      if (e.key === 'Escape' && isOpen) {
+      if (e.key === 'Escape') {
         onClose();
       }
     };
 
     if (isOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
       document.addEventListener('keydown', handleEscape);
-      return () => document.removeEventListener('keydown', handleEscape);
+      return () => {
+        document.removeEventListener('mousedown', handleClickOutside);
+        document.removeEventListener('keydown', handleEscape);
+      };
     }
   }, [isOpen, onClose]);
 
@@ -59,23 +63,17 @@ const UnitConverterPanel = ({ isOpen, onClose, onInsertValue }) => {
     onClose();
   };
 
-  let convertedValue = 0;
-  let fromUnit = null;
-  let toUnit = null;
+  const categoryUnits = getUnitsByCategory(activeCategory) || [];
+  const fromUnit = categoryUnits.find(u => u.id === fromUnitId);
+  const toUnit = categoryUnits.find(u => u.id === toUnitId);
 
-  const categoryUnits = getUnitsByCategory(activeCategory);
-  
-  if (categoryUnits && categoryUnits.length > 0) {
-    fromUnit = categoryUnits.find(u => u.id === fromUnitId);
-    toUnit = categoryUnits.find(u => u.id === toUnitId);
-    
-    if (fromUnit && toUnit) {
-      try {
-        const num = parseFloat(inputValue) || 0;
-        convertedValue = convertUnit(num, fromUnitId, toUnitId);
-      } catch (e) {
-        convertedValue = 0;
-      }
+  let convertedValue = 0;
+  if (fromUnit && toUnit) {
+    try {
+      const num = parseFloat(inputValue) || 0;
+      convertedValue = convertUnit(num, fromUnitId, toUnitId);
+    } catch (err) {
+      convertedValue = 0;
     }
   }
 
@@ -103,13 +101,13 @@ const UnitConverterPanel = ({ isOpen, onClose, onInsertValue }) => {
         </div>
 
         <div className="converter-tabs">
-          {Object.entries(categories).map(([key, label]) => (
+          {Object.keys(categories).map((catKey) => (
             <button
-              key={key}
-              className={`converter-tab ${activeCategory === key ? 'active' : ''}`}
-              onClick={() => setActiveCategory(key)}
+              key={catKey}
+              className={`converter-tab ${activeCategory === catKey ? 'active' : ''}`}
+              onClick={() => setActiveCategory(catKey)}
             >
-              {label}
+              {categories[catKey]}
             </button>
           ))}
         </div>
@@ -118,6 +116,7 @@ const UnitConverterPanel = ({ isOpen, onClose, onInsertValue }) => {
           <div className="converter-input-group">
             <label htmlFor="converter-input">Value</label>
             <input
+              ref={inputRef}
               id="converter-input"
               type="number"
               value={inputValue}
@@ -135,11 +134,15 @@ const UnitConverterPanel = ({ isOpen, onClose, onInsertValue }) => {
               onChange={(e) => setFromUnitId(e.target.value)}
               className="converter-select"
             >
-              {categoryUnits && categoryUnits.map((unit) => (
-                <option key={unit.id} value={unit.id}>
-                  {unit.symbol} - {unit.name}
-                </option>
-              ))}
+              {categoryUnits.length > 0 ? (
+                categoryUnits.map((unit) => (
+                  <option key={`${unit.id}-from`} value={unit.id}>
+                    {unit.symbol} - {unit.name}
+                  </option>
+                ))
+              ) : (
+                <option>No units</option>
+              )}
             </select>
           </div>
 
@@ -151,11 +154,15 @@ const UnitConverterPanel = ({ isOpen, onClose, onInsertValue }) => {
               onChange={(e) => setToUnitId(e.target.value)}
               className="converter-select"
             >
-              {categoryUnits && categoryUnits.map((unit) => (
-                <option key={unit.id} value={unit.id}>
-                  {unit.symbol} - {unit.name}
-                </option>
-              ))}
+              {categoryUnits.length > 0 ? (
+                categoryUnits.map((unit) => (
+                  <option key={`${unit.id}-to`} value={unit.id}>
+                    {unit.symbol} - {unit.name}
+                  </option>
+                ))
+              ) : (
+                <option>No units</option>
+              )}
             </select>
           </div>
         </div>
