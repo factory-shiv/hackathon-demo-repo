@@ -5,8 +5,10 @@ import './styles/MemoryButtons.css';
 import soundManager from './utils/soundManager';
 import { useNumberFormat } from './contexts/NumberFormatContext';
 import { useMemory } from './contexts/MemoryContext';
+import { useUnitConverter } from './contexts/UnitConverterContext';
 import { exportToCSV, exportToJSON, exportToTXT, downloadFile, importFromFile } from './utils/historyExporter';
 import ConstantsPanel from './components/ConstantsPanel';
+import UnitConverterPanel from './components/UnitConverterPanel';
 
 const Calculator = () => {
   // State variables
@@ -27,6 +29,9 @@ const Calculator = () => {
 
   // Get memory context
   const { memoryValue, hasMemory, memoryAdd, memorySubtract, memoryRecall, memoryClear } = useMemory();
+
+  // Get unit converter context
+  const { showConverter, setShowConverter } = useUnitConverter();
 
   /* ------------------------------------------------------------------
    * Number formatting helper
@@ -431,6 +436,13 @@ const Calculator = () => {
         return;
       }
 
+      // Handle unit converter (Ctrl/Cmd + Shift + U)
+      if ((e.ctrlKey || e.metaKey) && e.shiftKey && key.toLowerCase() === 'u') {
+        e.preventDefault();
+        setShowConverter(!showConverter);
+        return;
+      }
+
       // Map keys to actions
       if (/^[0-9]$/.test(key)) {
         e.preventDefault();
@@ -621,6 +633,16 @@ const Calculator = () => {
    * Constants panel operations
    * ------------------------------------------------------------------ */
   const handleSelectConstant = (value) => {
+    setDisplayValue(String(value));
+    setWaitingForOperand(false);
+    playButtonSound('function');
+    addVisualFeedback('success-animation');
+  };
+
+  /* ------------------------------------------------------------------
+   * Unit converter operations
+   * ------------------------------------------------------------------ */
+  const handleInsertUnitValue = (value) => {
     setDisplayValue(String(value));
     setWaitingForOperand(false);
     playButtonSound('function');
@@ -966,6 +988,12 @@ const Calculator = () => {
         isOpen={showConstantsPanel}
         onClose={() => setShowConstantsPanel(false)}
         onSelectConstant={handleSelectConstant}
+      />
+
+      <UnitConverterPanel
+        isOpen={showConverter}
+        onClose={() => setShowConverter(false)}
+        onInsertValue={handleInsertUnitValue}
       />
     </>
   );
