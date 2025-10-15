@@ -4,19 +4,20 @@
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  max-width: 1200px;
   margin: 0 auto;
-  padding: var(--spacing-md);
-  gap: var(--spacing-lg);
+  padding: clamp(0.5rem, 3vw, 2rem);
+  gap: clamp(1rem, 2vw, 2rem);
+  width: 100%;
 }
-
 
 main {
   flex: 1;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: var(--spacing-md) 0;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: clamp(1rem, 2vw, 2rem);
+  padding: 0;
+  width: 100%;
+  max-width: 100%;
 }
 
 .App-footer {
@@ -40,24 +41,35 @@ main {
   50% { transform: scale(1.1); }
 }
 
-/* Responsive styles */
-@media (max-width: 768px) {
-  .App {
-    padding: var(--spacing-sm);
+/* Desktop 2-column layout (1024px and up) */
+@media (min-width: 1024px) {
+  main {
+    grid-template-columns: 1fr 1fr;
+    max-width: 1600px;
+    margin: 0 auto;
   }
   
-  .HeaderContent h1 {
-    font-size: 2rem;
+  .App {
+    padding: clamp(1rem, 4vw, 3rem);
+  }
+}
+
+/* Tablet responsive styles (480px - 1023px) */
+@media (min-width: 480px) and (max-width: 1023px) {
+  main {
+    width: 100%;
+  }
+}
+
+/* Mobile responsive styles (below 480px) */
+@media (max-width: 479px) {
+  .App {
+    gap: clamp(0.75rem, 2vw, 1.5rem);
   }
   
   .App-footer {
     padding: var(--spacing-md) 0 var(--spacing-sm);
-  }
-}
-
-@media (max-width: 480px) {
-  .HeaderContent h1 {
-    font-size: 1.75rem;
+    font-size: 0.85rem;
   }
 }
 
@@ -73,31 +85,31 @@ main {
 }
 
 .HeaderContent {
-  max-width: 1200px;
+  width: 100%;
+  max-width: 1600px;
   margin: 0 auto;
-  padding: var(--spacing-md);
+  padding: clamp(0.75rem, 2vw, 1.5rem);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: var(--spacing-md);
+  gap: clamp(1rem, 3vw, 2rem);
+  flex-wrap: wrap;
 }
 
 .HeaderContent h1 {
-  font-size: 1.75rem;
+  font-size: clamp(1.5rem, 5vw, 2.5rem);
   font-weight: 600;
   letter-spacing: -0.25px;
-  color: inherit; /* inherit header text colour */
+  color: inherit;
   margin: 0;
+  flex-shrink: 0;
 }
 
-@media (min-width: 769px) {
-  .HeaderContent h1 {
-    font-size: 2rem;
-  }
-}
-
-@media (min-width: 1024px) {
-  .HeaderContent h1 {
-    font-size: 2.25rem;
-  }
+/* Container for grouping header controls */
+.header-controls-group {
+  display: flex;
+  align-items: center;
+  gap: clamp(0.5rem, 1.5vw, 1rem);
+  flex-wrap: wrap;
+  flex-shrink: 0;
 }

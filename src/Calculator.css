@@ -2,10 +2,7 @@
 
 .calculator {
   width: 100%;
-  /* 50% of viewport width for larger screens */
-  max-width: 50vw;
-  /* Ensure calculator doesn't get too narrow */
-  min-width: 320px;
+  min-width: 280px;
   background-color: var(--bg-color);
   border-radius: 16px;
   box-shadow: 0 10px 30px var(--shadow-color), 0 5px 15px var(--shadow-color);
@@ -265,19 +262,16 @@
 }
 
 /* Responsive adjustments */
-/* Tablet styles - 70% width */
-@media (max-width: 768px) {
+/* Tablet styles - optimized for mid-size screens */
+@media (max-width: 1023px) {
   .calculator {
-    max-width: 70vw;
+    max-width: 100%;
+    margin: 0 auto;
   }
 }
 
-/* Mobile styles - 90% width */
+/* Mobile styles - below 480px */
 @media (max-width: 480px) {
-  .calculator {
-    max-width: 90vw;
-  }
-  
   .calculator-display {
     padding: 1rem;
     min-height: 100px;
@@ -287,7 +281,7 @@
     font-size: 2rem;
   }
   
-.calculator-key {
+  .calculator-key {
     height: 50px;
     font-size: 1.25rem;
   }

@@ -22,11 +22,13 @@ function App() {
             <header className="AppHeader">
               <div className="HeaderContent">
                 <h1>Calculator App</h1>
-                <MemoryIndicator />
-                <ThemeToggle />
-                <SoundToggle />
-                <NumberFormatToggle />
-                <UnitConverterToggle />
+                <div className="header-controls-group">
+                  <MemoryIndicator />
+                  <ThemeToggle />
+                  <SoundToggle />
+                  <NumberFormatToggle />
+                  <UnitConverterToggle />
+                </div>
               </div>
             </header>
 
