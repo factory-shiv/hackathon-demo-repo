@@ -13,7 +13,7 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background: var(--bg-primary);
+  background: var(--bg-color);
   border: 1px solid var(--border-color);
   border-radius: 12px;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
@@ -38,7 +38,7 @@
   margin: 0;
   font-size: 18px;
   font-weight: 600;
-  color: var(--text-primary);
+  color: var(--text-color);
 }
 
 .converter-close {
@@ -46,7 +46,7 @@
   border: none;
   font-size: 28px;
   cursor: pointer;
-  color: var(--text-secondary);
+  color: var(--secondary-color);
   padding: 0;
   width: 32px;
   height: 32px;
@@ -58,8 +58,8 @@
 }
 
 .converter-close:hover {
-  background: var(--bg-secondary);
-  color: var(--text-primary);
+  background: var(--btn-hover-bg);
+  color: var(--text-color);
 }
 
 .converter-tabs {
@@ -83,8 +83,8 @@
 }
 
 .converter-tab:hover {
-  background: var(--bg-secondary);
-  color: var(--text-primary);
+  background: var(--btn-hover-bg);
+  color: var(--text-color);
 }
 
 .converter-tab.active {
@@ -102,8 +102,8 @@
   padding: 8px 12px;
   border: 1px solid var(--border-color);
   border-radius: 6px;
-  background: var(--bg-secondary);
-  color: var(--text-primary);
+  background: var(--btn-bg);
+  color: var(--text-color);
   font-size: 14px;
   transition: all 0.2s ease;
 }
@@ -111,7 +111,7 @@
 .converter-search-input:focus {
   outline: none;
   border-color: var(--primary-color);
-  background: var(--bg-primary);
+  background: var(--bg-color);
 }
 
 .converter-controls {
@@ -133,7 +133,7 @@
 .converter-unit-select label {
   font-size: 12px;
   font-weight: 600;
-  color: var(--text-secondary);
+  color: var(--secondary-color);
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
@@ -143,8 +143,8 @@
   padding: 8px 12px;
   border: 1px solid var(--border-color);
   border-radius: 6px;
-  background: var(--bg-secondary);
-  color: var(--text-primary);
+  background: var(--btn-bg);
+  color: var(--text-color);
   font-size: 14px;
   transition: all 0.2s ease;
 }
@@ -153,12 +153,12 @@
 .converter-select:focus {
   outline: none;
   border-color: var(--primary-color);
-  background: var(--bg-primary);
+  background: var(--bg-color);
 }
 
 .converter-result {
   padding: 16px;
-  background: var(--bg-secondary);
+  background: var(--btn-bg);
   border-bottom: 1px solid var(--border-color);
   display: flex;
   flex-direction: column;
@@ -177,19 +177,19 @@
 .result-value {
   font-size: 18px;
   font-weight: 600;
-  color: var(--primary-color);
+  color: var(--text-color);
 }
 
 .result-unit {
   font-size: 12px;
   font-weight: 600;
-  color: var(--text-secondary);
+  color: var(--secondary-color);
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
 
 .result-equals {
-  color: var(--text-secondary);
+  color: var(--secondary-color);
   margin: 0 4px;
   font-weight: 600;
 }
@@ -204,8 +204,8 @@
   padding: 8px 16px;
   border: 1px solid var(--border-color);
   border-radius: 6px;
-  background: var(--bg-primary);
-  color: var(--text-primary);
+  background: var(--btn-bg);
+  color: var(--text-color);
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
