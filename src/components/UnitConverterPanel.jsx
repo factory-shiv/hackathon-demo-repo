@@ -1,10 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { categories, getUnitsByCategory, searchUnits, convertUnit } from '../data/units';
+import { categories, getUnitsByCategory, convertUnit } from '../data/units';
 import '../styles/UnitConverterPanel.css';
 
 const UnitConverterPanel = ({ isOpen, onClose, onInsertValue }) => {
   const [activeCategory, setActiveCategory] = useState('length');
-  const [searchQuery, setSearchQuery] = useState('');
   const [inputValue, setInputValue] = useState('1');
   const [fromUnitId, setFromUnitId] = useState('m');
   const [toUnitId, setToUnitId] = useState('ft');
@@ -12,22 +11,16 @@ const UnitConverterPanel = ({ isOpen, onClose, onInsertValue }) => {
   const panelRef = useRef(null);
   const searchInputRef = useRef(null);
 
-  // Update unit IDs when category changes
+  // Update units when category changes
   useEffect(() => {
-    const categoryUnits = getUnitsByCategory(activeCategory);
-    if (categoryUnits.length >= 2) {
-      setFromUnitId(categoryUnits[0].id);
-      setToUnitId(categoryUnits[1].id);
+    const units = getUnitsByCategory(activeCategory);
+    if (units && units.length >= 2) {
+      setFromUnitId(units[0].id);
+      setToUnitId(units[1].id || units[0].id);
     }
   }, [activeCategory]);
 
-  useEffect(() => {
-    if (isOpen && searchInputRef.current) {
-      searchInputRef.current.focus();
-    }
-  }, [isOpen]);
-
-  // Handle outside clicks and escape key
+  // Handle outside clicks
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (panelRef.current && !panelRef.current.contains(e.target)) {
@@ -35,51 +28,56 @@ const UnitConverterPanel = ({ isOpen, onClose, onInsertValue }) => {
       }
     };
 
+    if (isOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => document.removeEventListener('mousedown', handleClickOutside);
+    }
+  }, [isOpen, onClose]);
+
+  // Handle escape key
+  useEffect(() => {
     const handleEscape = (e) => {
-      if (e.key === 'Escape') {
+      if (e.key === 'Escape' && isOpen) {
         onClose();
       }
     };
 
     if (isOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
       document.addEventListener('keydown', handleEscape);
-      return () => {
-        document.removeEventListener('mousedown', handleClickOutside);
-        document.removeEventListener('keydown', handleEscape);
-      };
+      return () => document.removeEventListener('keydown', handleEscape);
     }
   }, [isOpen, onClose]);
 
-  const categoryUnits = searchQuery
-    ? searchUnits(searchQuery)
-    : getUnitsByCategory(activeCategory);
-
-  const performConversion = () => {
-    try {
-      const numValue = parseFloat(inputValue);
-      if (isNaN(numValue)) return 0;
-      return convertUnit(numValue, fromUnitId, toUnitId);
-    } catch {
-      return 0;
-    }
-  };
-
-  const convertedValue = performConversion();
-
   const handleCopy = (value) => {
-    navigator.clipboard.writeText(value.toString());
+    navigator.clipboard.writeText(String(value));
     setCopyStatus('Copied!');
     setTimeout(() => setCopyStatus(''), 2000);
   };
 
-  const handleInsertValue = (value) => {
+  const handleInsert = (value) => {
     onInsertValue(value);
     onClose();
   };
 
-  const fromUnit = categoryUnits.find(u => u.id === fromUnitId);
-  const toUnit = categoryUnits.find(u => u.id === toUnitId);
+  let convertedValue = 0;
+  let fromUnit = null;
+  let toUnit = null;
+
+  const categoryUnits = getUnitsByCategory(activeCategory);
+  
+  if (categoryUnits && categoryUnits.length > 0) {
+    fromUnit = categoryUnits.find(u => u.id === fromUnitId);
+    toUnit = categoryUnits.find(u => u.id === toUnitId);
+    
+    if (fromUnit && toUnit) {
+      try {
+        const num = parseFloat(inputValue) || 0;
+        convertedValue = convertUnit(num, fromUnitId, toUnitId);
+      } catch (e) {
+        convertedValue = 0;
+      }
+    }
+  }
 
   if (!isOpen) return null;
 
@@ -109,25 +107,11 @@ const UnitConverterPanel = ({ isOpen, onClose, onInsertValue }) => {
             <button
               key={key}
               className={`converter-tab ${activeCategory === key ? 'active' : ''}`}
-              onClick={() => {
-                setActiveCategory(key);
-                setSearchQuery('');
-              }}
+              onClick={() => setActiveCategory(key)}
             >
               {label}
             </button>
           ))}
-        </div>
-
-        <div className="converter-search">
-          <input
-            ref={searchInputRef}
-            type="text"
-            placeholder="Search units..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="converter-search-input"
-          />
         </div>
 
         <div className="converter-controls">
@@ -151,7 +135,7 @@ const UnitConverterPanel = ({ isOpen, onClose, onInsertValue }) => {
               onChange={(e) => setFromUnitId(e.target.value)}
               className="converter-select"
             >
-              {categoryUnits.map((unit) => (
+              {categoryUnits && categoryUnits.map((unit) => (
                 <option key={unit.id} value={unit.id}>
                   {unit.symbol} - {unit.name}
                 </option>
@@ -167,7 +151,7 @@ const UnitConverterPanel = ({ isOpen, onClose, onInsertValue }) => {
               onChange={(e) => setToUnitId(e.target.value)}
               className="converter-select"
             >
-              {categoryUnits.map((unit) => (
+              {categoryUnits && categoryUnits.map((unit) => (
                 <option key={unit.id} value={unit.id}>
                   {unit.symbol} - {unit.name}
                 </option>
@@ -176,68 +160,35 @@ const UnitConverterPanel = ({ isOpen, onClose, onInsertValue }) => {
           </div>
         </div>
 
-        <div className="converter-result">
-          <div className="result-display">
-            <span className="result-value">{inputValue}</span>
-            <span className="result-unit">{fromUnit?.symbol}</span>
-            <span className="result-equals">=</span>
-            <span className="result-value">{convertedValue}</span>
-            <span className="result-unit">{toUnit?.symbol}</span>
-          </div>
+        {fromUnit && toUnit && (
+          <div className="converter-result">
+            <div className="result-display">
+              <span className="result-value">{inputValue}</span>
+              <span className="result-unit">{fromUnit.symbol}</span>
+              <span className="result-equals">=</span>
+              <span className="result-value">{convertedValue.toFixed(6)}</span>
+              <span className="result-unit">{toUnit.symbol}</span>
+            </div>
 
-          <div className="result-actions">
-            <button
-              className="result-btn copy-btn"
-              onClick={() => handleCopy(convertedValue)}
-              title="Copy to clipboard"
-            >
-              📋 {copyStatus || 'Copy'}
-            </button>
-            <button
-              className="result-btn insert-btn"
-              onClick={() => handleInsertValue(convertedValue)}
-              title="Insert into calculator"
-            >
-              ➕ Insert
-            </button>
+            <div className="result-actions">
+              <button
+                className="result-btn copy-btn"
+                onClick={() => handleCopy(convertedValue)}
+              >
+                📋 {copyStatus || 'Copy'}
+              </button>
+              <button
+                className="result-btn insert-btn"
+                onClick={() => handleInsert(convertedValue)}
+              >
+                ➕ Insert
+              </button>
+            </div>
           </div>
-        </div>
-
-        <div className="converter-list">
-          <div className="converter-list-title">Quick conversions for {inputValue} {fromUnit?.symbol}:</div>
-          {categoryUnits.filter(u => u.id !== fromUnitId).slice(0, 8).map((unit) => {
-            if (!unit || !unit.id) return null;
-            try {
-              const numValue = parseFloat(inputValue) || 0;
-              if (isNaN(numValue)) return null;
-              const value = convertUnit(numValue, fromUnitId, unit.id);
-              if (typeof value !== 'number' || isNaN(value)) return null;
-              return (
-                <div key={String(unit.id)} className="converter-list-item">
-                  <div className="converter-list-left">
-                    <div className="converter-list-result">{value.toFixed(4)}</div>
-                    <div className="converter-list-unit">{String(unit.symbol)}</div>
-                  </div>
-                  <div className="converter-list-info">
-                    <div className="converter-list-name">{String(unit.name)}</div>
-                  </div>
-                  <button
-                    className="converter-list-copy"
-                    onClick={() => handleCopy(value)}
-                    title="Copy value"
-                  >
-                    📋
-                  </button>
-                </div>
-              );
-            } catch (e) {
-              return null;
-            }
-          })}
-        </div>
+        )}
 
         <div className="converter-footer">
-          <span>Convert between units instantly</span>
+          <span>Convert between units</span>
         </div>
       </div>
     </>
