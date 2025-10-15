@@ -436,8 +436,8 @@ const Calculator = () => {
         return;
       }
 
-      // Handle unit converter (Ctrl/Cmd + Shift + U)
-      if ((e.ctrlKey || e.metaKey) && e.shiftKey && key.toLowerCase() === 'u') {
+      // Handle unit converter (Ctrl/Cmd + Alt + U)
+      if ((e.ctrlKey || e.metaKey) && e.altKey && key.toLowerCase() === 'u') {
         e.preventDefault();
         setShowConverter(!showConverter);
         return;

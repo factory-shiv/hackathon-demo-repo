@@ -8,7 +8,7 @@ const UnitConverterToggle = () => {
     <button
       className="HeaderButton UnitConverterToggle"
       onClick={() => setShowConverter(!showConverter)}
-      title="Open unit converter (Ctrl+Shift+U)"
+      title="Open unit converter (Ctrl+Alt+U)"
       aria-pressed={showConverter}
     >
       📐
