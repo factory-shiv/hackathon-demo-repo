@@ -205,17 +205,21 @@ const UnitConverterPanel = ({ isOpen, onClose, onInsertValue }) => {
 
         <div className="converter-list">
           <div className="converter-list-title">Quick conversions for {inputValue} {fromUnit?.symbol}:</div>
-          {categoryUnits.filter(u => u.id !== fromUnitId).map((unit) => {
+          {categoryUnits.filter(u => u.id !== fromUnitId).slice(0, 8).map((unit) => {
+            if (!unit || !unit.id) return null;
             try {
-              const value = convertUnit(parseFloat(inputValue) || 0, fromUnitId, unit.id);
+              const numValue = parseFloat(inputValue) || 0;
+              if (isNaN(numValue)) return null;
+              const value = convertUnit(numValue, fromUnitId, unit.id);
+              if (typeof value !== 'number' || isNaN(value)) return null;
               return (
-                <div key={unit.id} className="converter-list-item">
+                <div key={String(unit.id)} className="converter-list-item">
                   <div className="converter-list-left">
-                    <div className="converter-list-result">{value}</div>
-                    <div className="converter-list-unit">{unit.symbol}</div>
+                    <div className="converter-list-result">{value.toFixed(4)}</div>
+                    <div className="converter-list-unit">{String(unit.symbol)}</div>
                   </div>
                   <div className="converter-list-info">
-                    <div className="converter-list-name">{unit.name}</div>
+                    <div className="converter-list-name">{String(unit.name)}</div>
                   </div>
                   <button
                     className="converter-list-copy"
@@ -226,7 +230,7 @@ const UnitConverterPanel = ({ isOpen, onClose, onInsertValue }) => {
                   </button>
                 </div>
               );
-            } catch {
+            } catch (e) {
               return null;
             }
           })}

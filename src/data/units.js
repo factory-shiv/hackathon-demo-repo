@@ -3,7 +3,6 @@
 export const categories = {
   length: 'Length',
   weight: 'Weight',
-  temperature: 'Temperature',
   volume: 'Volume',
   speed: 'Speed',
   area: 'Area',
@@ -50,11 +49,6 @@ export const units = [
   { id: 'mph', name: 'Mile per Hour', symbol: 'mph', category: 'speed', toBase: 0.44704, fromBase: 2.23694 },
   { id: 'knot', name: 'Knot', symbol: 'knot', category: 'speed', toBase: 0.51444, fromBase: 1.94384 },
   { id: 'fps', name: 'Foot per Second', symbol: 'ft/s', category: 'speed', toBase: 0.3048, fromBase: 3.28084 },
-
-  // Temperature (special handling - uses convertTemperature function)
-  { id: 'c', name: 'Celsius', symbol: '°C', category: 'temperature' },
-  { id: 'f', name: 'Fahrenheit', symbol: '°F', category: 'temperature' },
-  { id: 'k', name: 'Kelvin', symbol: 'K', category: 'temperature' },
 
   // Area
   { id: 'mm2', name: 'Square Millimeter', symbol: 'mm²', category: 'area', toBase: 0.000001, fromBase: 1000000 },
