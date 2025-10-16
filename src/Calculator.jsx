@@ -24,6 +24,17 @@ const Calculator = () => {
   const [importStatus, setImportStatus] = useState(''); // import feedback
   const [showConstantsPanel, setShowConstantsPanel] = useState(false); // constants panel
 
+  // Last answer for ANS button (persistent)
+  const LAST_ANSWER_KEY = 'calculator_last_answer';
+  const [lastAnswer, setLastAnswer] = useState(() => {
+    try {
+      const stored = localStorage.getItem(LAST_ANSWER_KEY);
+      return stored ? parseFloat(stored) : null;
+    } catch {
+      return null;
+    }
+  });
+
   // Get number formatting context
   const { formattingEnabled, formatter } = useNumberFormat();
 
@@ -85,6 +96,17 @@ const Calculator = () => {
       /* ignore quota / private-mode failures */
     }
   }, [history]);
+
+  // Persist lastAnswer whenever it changes
+  useEffect(() => {
+    if (lastAnswer !== null) {
+      try {
+        localStorage.setItem(LAST_ANSWER_KEY, String(lastAnswer));
+      } catch {
+        /* ignore quota / private-mode failures */
+      }
+    }
+  }, [lastAnswer]);
 
   // Add a new entry to the history tape
   const addHistoryEntry = (expression, result) => {
@@ -284,6 +306,8 @@ const Calculator = () => {
       playButtonSound('equals');
       addVisualFeedback('success-animation');
       addHistoryEntry(`${previousValue} ${operation} ${inputValue}`, result);
+      // Store result as last answer for ANS button
+      setLastAnswer(result);
     }
     
     // Reset for a new calculation
@@ -318,6 +342,7 @@ const Calculator = () => {
       setDisplayValue(String(result));
       addVisualFeedback('success-animation');
       addHistoryEntry(`√(${value})`, result);
+      setLastAnswer(result);
     }
     
     setWaitingForOperand(true);
@@ -333,6 +358,7 @@ const Calculator = () => {
     setDisplayValue(String(result));
     addVisualFeedback('success-animation');
     addHistoryEntry(`${value}²`, result);
+    setLastAnswer(result);
     setWaitingForOperand(true);
   };
 
@@ -353,6 +379,7 @@ const Calculator = () => {
       setDisplayValue(String(result));
       addVisualFeedback('success-animation');
       addHistoryEntry(`1/(${value})`, result);
+      setLastAnswer(result);
     }
     
     setWaitingForOperand(true);
@@ -400,6 +427,25 @@ const Calculator = () => {
     playButtonSound('function');
     
     memoryClear();
+    addVisualFeedback('success-animation');
+  };
+
+  /* ------------------------------------------------------------------
+   * ANS (Answer) operation - recalls last calculated result
+   * ------------------------------------------------------------------ */
+  const handleAns = () => {
+    setError('');
+    
+    if (lastAnswer === null) {
+      // No answer yet, show feedback
+      setCopyStatus('No answer yet');
+      playButtonSound('error');
+      return;
+    }
+    
+    playButtonSound('function');
+    setDisplayValue(String(lastAnswer));
+    setWaitingForOperand(false);
     addVisualFeedback('success-animation');
   };
 
@@ -508,6 +554,10 @@ const Calculator = () => {
           e.preventDefault();
           handleReciprocal();
           break;
+        case 'a':
+          e.preventDefault();
+          handleAns();
+          break;
         default:
           break;
       }
@@ -542,7 +592,7 @@ const Calculator = () => {
           default:
             return;
         }
-      } else if (!['escape', 'c', 'backspace', '%', 'r', 's', 'i'].includes(lowered)) {
+      } else if (!['escape', 'c', 'backspace', '%', 'r', 's', 'i', 'a'].includes(lowered)) {
         return; // unmapped key
       }
 
@@ -875,20 +925,31 @@ const Calculator = () => {
             <button 
               className={'calculator-key key-sqrt' + getActiveClass('r')} 
               onClick={handleSquareRoot}
+              title="Square Root (R)"
             >
               √
             </button>
             <button 
               className={'calculator-key key-square' + getActiveClass('s')} 
               onClick={handleSquare}
+              title="Square (S)"
             >
               x²
             </button>
             <button 
               className={'calculator-key key-reciprocal' + getActiveClass('i')} 
               onClick={handleReciprocal}
+              title="Reciprocal (I)"
             >
               1/x
+            </button>
+            <button 
+              className={'calculator-key key-ans' + getActiveClass('a')} 
+              onClick={handleAns}
+              title="Last Answer (A)"
+              disabled={lastAnswer === null}
+            >
+              ANS
             </button>
           </div>
           

@@ -9,6 +9,7 @@ A modern, responsive web-based calculator application built with React and Vite.
 ### Core Calculator
 - **Basic Arithmetic Operations**: Addition, subtraction, multiplication, and division
 - **Advanced Functions**: Square root, square, reciprocal, percentage, and sign toggling
+- **ANS (Answer) Button**: Quickly recall and reuse the last calculated result
 - **Decimal Support**: Precise calculations with decimal numbers
 - **Error Handling**: Graceful handling of division by zero and other errors
 - **Keyboard Support**: Full keyboard control for all operations
@@ -44,6 +45,7 @@ A modern, responsive web-based calculator application built with React and Vite.
 | `R`             | Square root (√)              |
 | `S`             | Square (x²)                  |
 | `I`             | Reciprocal (1/x)             |
+| `A`             | Insert last answer (ANS)     |
 | `Shift+M`       | Memory Add (M+)              |
 | `Shift+N`       | Memory Subtract (M-)         |
 | `Shift+R`       | Memory Recall (MR)           |

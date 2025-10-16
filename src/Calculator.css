@@ -145,7 +145,7 @@
 
 .advanced-keys {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 0.75rem;
 }
 
@@ -215,6 +215,18 @@
   background-color: #5a3fd1; /* same as :active for consistency */
   transform: translateY(2px) scale(0.97);
   box-shadow: 0 0 0 rgba(0, 0, 0, 0);
+}
+
+/* Disabled state for advanced keys */
+.advanced-keys .calculator-key:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  background-color: #6f4af6;
+}
+
+.advanced-keys .calculator-key:disabled:hover {
+  background-color: #6f4af6;
+  transform: none;
 }
 
 .operator-keys .calculator-key {

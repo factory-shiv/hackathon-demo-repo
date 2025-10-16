@@ -120,6 +120,21 @@ const CommandPalette = () => {
       }
     },
     {
+      id: 'ans',
+      title: 'Insert Last Answer (ANS)',
+      subtitle: 'Recall the last calculated result',
+      keywords: ['ans', 'answer', 'last', 'result', 'recall', 'previous'],
+      shortcut: 'A',
+      run: () => {
+        const button = document.querySelector('.key-ans');
+        if (button && !button.disabled) {
+          button.click();
+          return 'Last answer inserted';
+        }
+        return 'No answer available yet';
+      }
+    },
+    {
       id: 'percentage',
       title: 'Percentage (%)',
       subtitle: 'Convert the current value to a percentage',
