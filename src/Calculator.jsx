@@ -915,7 +915,7 @@ const Calculator = () => {
           <button className={'calculator-key key-equals' + getActiveClass('enter')} onClick={handleEquals}>=</button>
         </div>
       </div>
-      
+
       <section className="history-panel" aria-label="Calculation history">
         <div className="history-header">
           <h3>History</h3>
