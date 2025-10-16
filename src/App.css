@@ -41,6 +41,20 @@ main {
   50% { transform: scale(1.1); }
 }
 
+/* Tablet 2-column layout (768px - 1023px) */
+@media (min-width: 768px) and (max-width: 1023px) {
+  main {
+    grid-template-columns: 1fr 1fr;
+    max-width: 1400px;
+    margin: 0 auto;
+    width: 100%;
+  }
+  
+  .App {
+    padding: clamp(1rem, 3vw, 2.5rem);
+  }
+}
+
 /* Desktop 2-column layout (1024px and up) */
 @media (min-width: 1024px) {
   main {
@@ -54,9 +68,10 @@ main {
   }
 }
 
-/* Tablet responsive styles (480px - 1023px) */
-@media (min-width: 480px) and (max-width: 1023px) {
+/* Small tablet/large mobile styles (480px - 767px) */
+@media (min-width: 480px) and (max-width: 767px) {
   main {
+    grid-template-columns: 1fr;
     width: 100%;
   }
 }
